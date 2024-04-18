@@ -49,6 +49,6 @@ export class TimetableCard {
         const start = new Number(this.period) as number;
         const end = (start + this.lesson.durationperiods) - 1;
 
-        return `${start}-${end}`;
+        return [start, end];
     }
 }

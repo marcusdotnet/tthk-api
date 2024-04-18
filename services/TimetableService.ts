@@ -1,3 +1,4 @@
+import { ClassTimetable } from "../types/ClassTimetable";
 import { TimetableCard } from "../types/TimetableCard";
 import { TimetableClass, type TimetableClassId } from "../types/TimetableClass";
 import { TimetableDayDefinition } from "../types/TimetableDayDefinition";
@@ -75,8 +76,7 @@ export class TimetableService {
             
 
             const classObj = new TimetableClass();
-            Object.assign(classObj, classData);
-            
+            Object.assign(classObj, classData);            
 
             this.classLookup[name] = classData.id;
         });

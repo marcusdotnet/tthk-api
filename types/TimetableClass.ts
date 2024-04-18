@@ -1,4 +1,5 @@
 import timetableService from "../service";
+import { ClassTimetable } from "./ClassTimetable";
 import type { TimetableClassroom, TimetableClassroomId } from "./TimetableClassroom"
 import type { TimetableTeacher, TimetableTeacherId } from "./TimetableTeacher"
 
@@ -49,5 +50,14 @@ export class TimetableClass {
         }
 
         return teachers;
+    }
+
+    #timetable: ClassTimetable | null = null;
+    get timetable() {
+        if (!this.#timetable) {
+            this.#timetable = new ClassTimetable(this.id);
+        }
+
+        return this.#timetable;
     }
 }

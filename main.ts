@@ -6,25 +6,15 @@ timetableService.fetchTimetable()
 .then(() => {
     const data = timetableService.data;
 
-
-    // const tarpe22 = timetableService.getClassByName("TARpe22");
-    // console.log(tarpe22?.classroom);
     
+    const tarpe22 = timetableService.getClassByName("TARpe22");
+    tarpe22?.timetable.query({
+        day: 0,
+        subjectQuery: "Mobiil"
+    }).map(card => {
+        console.log(card.assignedDays[0].short, card.lesson.subject);
+    });
     
-    
-    for (const card of Object.values(timetableService.data.cards)
-        .filter(card => card.lesson.classes.find(cl => cl.name == "TARpe22"))
-        .filter(card => card.assignedDays[0].id == "0")
-    ) {
-        const lesson = card.lesson;
-        
-
-        console.log(`
-            Subject: ${lesson.subject.name}
-            Day: ${card.assignedDays[0].name}
-            Periods: ${card.periodSpan}
-        `);            
-    }
     
     
     
