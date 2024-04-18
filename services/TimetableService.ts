@@ -1,11 +1,19 @@
 import { TimetableClass, type TimetableClassId } from "../types/TimetableClass";
+import { TimetableDayDefinition } from "../types/TimetableDayDefinition";
+import { TimetableLesson } from "../types/TimetableLesson";
 import type { TimetableServiceOptions } from "../types/TimetableServiceOptions";
+import { TimetableTermDefinition } from "../types/TimetableTermDefinition";
+import { TimetableWeekDefinition } from "../types/TimetableWeekDefinition";
 import type { TimetableApiDataJson } from "../types/_TimetableApiDataJson";
 import type { TimetableDataStore } from "../types/_TimetableDataStore";
 
 
 const instantiateDataObj: Record<string, any> = {
-    classes: (data: TimetableClass) => new TimetableClass()
+    classes: () => new TimetableClass(),
+    lessons: () => new TimetableLesson(),
+    daysdefs: () => new TimetableDayDefinition(),
+    weeksdefs: () => new TimetableWeekDefinition(),
+    termsdefs: () => new TimetableTermDefinition()
 };
 
 

@@ -1,5 +1,5 @@
 import timetableService from "../service";
-import type { TimetableClassroomId } from "./TimetableClassroom"
+import type { TimetableClassroom, TimetableClassroomId } from "./TimetableClassroom"
 import type { TimetableTeacher, TimetableTeacherId } from "./TimetableTeacher"
 
 /** The ID string for a timetable class */
@@ -10,18 +10,33 @@ export class TimetableClass {
     id: TimetableClassId = "";
     name: string = "";
     short: string = "";
-    teacherid: string = "";
-    classroomids: TimetableClassroomId[] = [];
     bell: string = "";
     color: string = "";
     customfields: [] = [];
     printsubjectpictures: boolean = false;
     edupageid: string = "";
+    
     classroomid: string = "";
-    teacherids: TimetableTeacherId[] = [];
+    classroomids: TimetableClassroomId[] = [];
+    get classroom(): TimetableClassroom | null {
+        return timetableService.data.classrooms[this.classroomid] || null;
+    }
 
-    get teacher(): TimetableTeacher {        
-        return timetableService.data.teachers[this.teacherid];
+    get classrooms() {
+        const classrooms: TimetableClassroom[] = [];
+        for (const classroomid of this.classroomids) {
+            const classroom = timetableService.data.classrooms[classroomid];
+
+            classrooms.push(classroom);
+        }
+
+        return classrooms;
+    }
+    
+    teacherid: string = "";
+    teacherids: TimetableTeacherId[] = [];
+    get teacher(): TimetableTeacher | null {        
+        return timetableService.data.teachers[this.teacherid] || null;
     }
 
     get teachers(): TimetableTeacher[] {
