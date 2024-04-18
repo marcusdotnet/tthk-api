@@ -1,6 +1,16 @@
-import type { TimetableDataColumn } from "./TimetableDataColumn"
+interface TimetableApiDataColumn {
+    id: string
+    type: string
+    name: string
+    table: string | null
+    subcolumns: [{
+        id: string
+        type: string
+        name: string
+    }] | null
+}
 
-export interface TimetableDataJson {
+export interface TimetableApiDataJson {
     r: {
         rights: {
             subjects: boolean
@@ -26,7 +36,7 @@ export interface TimetableDataJson {
                     item_name: string
                     icon: string
                 }
-                cdefs: [TimetableDataColumn]
+                cdefs: [TimetableApiDataColumn]
                 data_rows: [{}],
                 data_columns: [string]
             }]

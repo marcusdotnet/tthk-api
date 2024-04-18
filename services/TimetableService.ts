@@ -1,8 +1,12 @@
-import type { TimetableServiceOptions } from "../types/TimetableService";
-import type { TimetableDataJson } from "../types/TimetableDataJson";
-import type { TimetableDataStore } from "../types/TimetableDataStore";
-import type { TimetablePrettyEntry } from "../types/TimetablePrettyEntry";
-import { logwrite } from "../main";
+import { TimetableClass, type TimetableClassId } from "../types/TimetableClass";
+import type { TimetableServiceOptions } from "../types/TimetableServiceOptions";
+import type { TimetableApiDataJson } from "../types/_TimetableApiDataJson";
+import type { TimetableDataStore } from "../types/_TimetableDataStore";
+
+
+const instantiateDataObj: Record<string, any> = {
+    classes: (data: TimetableClass) => new TimetableClass()
+};
 
 
 export class TimetableService {
@@ -10,7 +14,6 @@ export class TimetableService {
     data: TimetableDataStore = {} as TimetableDataStore;
 
     classLookup: any = {};
-    classNameLookup: any = {};
 
     constructor(options: TimetableServiceOptions) {
         this.options = options;
@@ -30,18 +33,42 @@ export class TimetableService {
 
         
         const data = this.data
-        const jsonData: TimetableDataJson = await response.json();
+        const jsonData: TimetableApiDataJson = await response.json();
+
         jsonData.r.dbiAccessorRes?.tables.forEach(table => {
+            const rows = table.data_rows;
+            const tableData: any = {};
+            const instantianteFunc = instantiateDataObj[table.id] as unknown as any;
+
+            for (var r of rows) {
+                var row: {id: string} = r as {id: string};
+                var rowObj;
+
+                if (typeof instantianteFunc == "function") {
+                    rowObj = instantianteFunc();
+                    Object.assign(rowObj, row);
+                }
+
+                tableData[row!.id] = typeof rowObj != "undefined" ? rowObj : row;
+            }
+            
+            
             //@ts-ignore
-            data[table.id] = table.data_rows;
+            data[table.id] = tableData;            
         });
 
 
-        data.classes?.forEach(classData => {
-            const name = classData.name.trim();
+
+        
+        Object.values(data.classes as unknown as TimetableClass[]).forEach(classData => {            
+            const name = classData.name.trim().toLowerCase();
+            
+
+            const classObj = new TimetableClass();
+            Object.assign(classObj, classData);
+            
 
             this.classLookup[name] = classData.id;
-            this.classNameLookup[classData.id] = name;
         });
     }
 
@@ -49,69 +76,16 @@ export class TimetableService {
         return Object.keys(this.classLookup) as [string];
     }
 
-    findClassIdByName(className: string): string | null  {
-        const keys = Object.keys(this.classLookup);
-
-        for (const key of keys) {
-            if (key.toLowerCase().startsWith(className.toLowerCase())) {
-                return this.classLookup[key];
-            }
-        }
-
-        return null;
-    }
-
-    checkClassExist(classId: string): boolean {
-        return Object.values(this.classLookup).find(c => c == classId) != null;
-    }
-
-    getClassGroups(classId: string): [string] | null {
-        if (!this.checkClassExist(classId)) {
-            return null;
-        }
-
-
-        return [""];
-    }
-
-    getPrettyTimetable(): [TimetablePrettyEntry] {
-        const timetable: [TimetablePrettyEntry] = [] as unknown as [TimetablePrettyEntry];
-        const data = this.data;
-
-        data.cards?.forEach(card => {
-            const timetableEntry: TimetablePrettyEntry = {
-
-            };
-
-            const lessonData = data.lessons?.find(l => l.id == card.lessonid);
-            const subjectData = data.subjects?.find(s => s.id == lessonData?.subjectid);
-            const days = data.daysdefs?.find(d => d.id == lessonData?.daysdefid)?.vals;
-            
-            timetableEntry.teachers = lessonData!.teacherids.map(ti => {
-                const teacherData = data.teachers!.find(t => t.id == ti);
-
-                return teacherData!.short;
-            });
-
-            timetableEntry.groups = lessonData!.classids.map(classId => {
-                return this.classNameLookup[classId]
-            });
-            
-            
-            timetableEntry.startPeriod = card.period;
-            timetableEntry.subject = subjectData!.name
-            timetableEntry.count = lessonData!.count;
-            timetableEntry.duration = lessonData!.durationperiods;
-
-
-            // if (timetableEntry.groups.find(c => c == "TARpe22")) {
-            //     timetableEntry.DEV = card;
-            //     timetable.push(timetableEntry);
-            // };
-            timetable.push(timetableEntry)
-        });
-
+    getClassByName(className: string): TimetableClass | null  {
+        const id: TimetableClassId | null = this.classLookup[className.toLowerCase()] as TimetableClassId;
+        if (!id) return null;
+        const classData: TimetableClass | null = this.data.classes[id]
+        if (!classData) return null;
         
-        return timetable;
+        return classData;
+    }
+
+    checkClassExist(classId: TimetableClassId): boolean {
+        return Object.values(this.classLookup).find(c => c == classId) != null;
     }
 }
