@@ -1,4 +1,4 @@
-import timetableService from "../service";
+import timetableService from "../timetableService";
 import { ClassTimetable } from "./ClassTimetable";
 import type { TimetableClassroom, TimetableClassroomId } from "./TimetableClassroom"
 import type { TimetableTeacher, TimetableTeacherId } from "./TimetableTeacher"

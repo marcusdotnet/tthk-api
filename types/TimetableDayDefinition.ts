@@ -1,4 +1,4 @@
-import timetableService from "../service";
+import timetableService from "../timetableService";
 
 /** The ID string for a timetable day definition */
 export declare type TimetableDayDefinitionId = string

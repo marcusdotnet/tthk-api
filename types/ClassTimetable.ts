@@ -1,4 +1,4 @@
-import timetableService from "../service";
+import timetableService from "../timetableService";
 import type { TimetableCard } from "./TimetableCard";
 import type { TimetableClassId } from "./TimetableClass";
 import type { TimetableDayId } from "./TimetableDay";

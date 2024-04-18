@@ -1,4 +1,4 @@
-import timetableService from "../service"
+import timetableService from "../timetableService"
 import type { TimetableClassroomId } from "./TimetableClassroom"
 import type { TimetableDay } from "./TimetableDay"
 import type { TimetableLessonId } from "./TimetableLesson"

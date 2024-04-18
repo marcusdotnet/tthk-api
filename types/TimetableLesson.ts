@@ -1,4 +1,4 @@
-import timetableService from "../service";
+import timetableService from "../timetableService";
 import type { TimetableClassId } from "./TimetableClass"
 import type { TimetableDayDefinitionId } from "./TimetableDayDefinition"
 import type { TimetableGroupId } from "./TimetableGroup"
