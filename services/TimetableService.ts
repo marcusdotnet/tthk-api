@@ -1,3 +1,4 @@
+import { TimetableCard } from "../types/TimetableCard";
 import { TimetableClass, type TimetableClassId } from "../types/TimetableClass";
 import { TimetableDayDefinition } from "../types/TimetableDayDefinition";
 import { TimetableLesson } from "../types/TimetableLesson";
@@ -13,7 +14,8 @@ const instantiateDataObj: Record<string, any> = {
     lessons: () => new TimetableLesson(),
     daysdefs: () => new TimetableDayDefinition(),
     weeksdefs: () => new TimetableWeekDefinition(),
-    termsdefs: () => new TimetableTermDefinition()
+    termsdefs: () => new TimetableTermDefinition(),
+    cards: () => new TimetableCard()
 };
 
 
