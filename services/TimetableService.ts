@@ -1,14 +1,4 @@
-import { ClassTimetable } from "../types/ClassTimetable";
-import { TimetableCard } from "../types/TimetableCard";
-import { TimetableClass, type TimetableClassId } from "../types/TimetableClass";
-import { TimetableDayDefinition } from "../types/TimetableDayDefinition";
-import { TimetableLesson } from "../types/TimetableLesson";
-import type { TimetableServiceOptions } from "../types/TimetableServiceOptions";
-import { TimetableTermDefinition } from "../types/TimetableTermDefinition";
-import { TimetableWeekDefinition } from "../types/TimetableWeekDefinition";
-import type { TimetableApiDataJson } from "../types/_TimetableApiDataJson";
-import type { TimetableDataStore } from "../types/_TimetableDataStore";
-
+import { TimetableClass, TimetableLesson, TimetableDayDefinition, TimetableWeekDefinition, TimetableTermDefinition, TimetableCard, type TimetableDataStore, type TimetableApiDataJson, type TimetableClassId, type TimetableQuery } from "../types";
 
 const instantiateDataObj: Record<string, any> = {
     classes: () => new TimetableClass(),
@@ -20,19 +10,26 @@ const instantiateDataObj: Record<string, any> = {
 };
 
 
+interface TimetableServiceOptions {
+    eduPageTimetableUrl: string
+    schoolId: string
+    gsh: string
+}
+
 export class TimetableService {
     options: TimetableServiceOptions | null = null;
     data: TimetableDataStore = {} as TimetableDataStore;
 
     classLookup: any = {};
 
-    constructor(options: TimetableServiceOptions) {
+
+    configure(options: TimetableServiceOptions) {
         this.options = options;
-        this.fetchTimetable();
     }
 
-    async fetchTimetable() {
+    async fetchData() {
         const options = this.options as TimetableServiceOptions;
+        this.data = {} as TimetableDataStore;
 
         const response = await fetch(options.eduPageTimetableUrl, {
             method: "POST",
@@ -47,25 +44,27 @@ export class TimetableService {
         const jsonData: TimetableApiDataJson = await response.json();
 
         jsonData.r.dbiAccessorRes?.tables.forEach(table => {
-            const rows = table.data_rows;
+            const rows = table.data_rows as [{id: string}];
             const tableData: any = {};
             const instantianteFunc = instantiateDataObj[table.id] as unknown as any;
 
-            for (var r of rows) {
-                var row: {id: string} = r as {id: string};
-                var rowObj;
-
+            for (var row of rows) {
                 if (typeof instantianteFunc == "function") {
-                    rowObj = instantianteFunc();
+                    const rowObj = instantianteFunc();
                     Object.assign(rowObj, row);
+
+                    tableData[row.id] = rowObj;
+                    continue;
                 }
 
-                tableData[row!.id] = typeof rowObj != "undefined" ? rowObj : row;
+                tableData[row.id] = row;
             }
             
             
             //@ts-ignore
-            data[table.id] = tableData;            
+            data[table.id] = tableData;
+            
+            return data;
         });
 
 
@@ -97,5 +96,31 @@ export class TimetableService {
 
     checkClassExist(classId: TimetableClassId): boolean {
         return Object.values(this.classLookup).find(c => c == classId) != null;
+    }
+
+    query(query: TimetableQuery) {
+        return Object.values(this.data.cards)
+            .filter(card => {
+                if (query.class == null) return true;
+                if (typeof query.class == "string") {}
+                const queryId = typeof query.class == "string" ? query.class : (query.class as unknown as TimetableClass)!.id
+
+                return card.lesson.classids.includes(queryId);
+            })
+            .filter(card => query.subjectQuery != null ? card.lesson.subject.name.toLowerCase().includes(query.subjectQuery.toLowerCase()) : true)
+            .filter(card => query.day != null ? card?.assignedDays[0]?.id == query.day : card.days != "")
+            .filter(card => {
+                if (query.periodStart == null) return true;
+                const [start] = card.periodSpan;
+
+                return Number(query.periodStart) >= start;
+            })
+            .filter(card => {
+                if (query.periodEnd == null) return true;
+                const [_, end] = card.periodSpan;
+
+                return Number(query.periodEnd) <= end;
+            })
+            .filter(card => query.count != null ? card.lesson.count >= query.count : true);
     }
 }

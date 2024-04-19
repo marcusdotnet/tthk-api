@@ -1,14 +1,21 @@
-import type { TimetableChangeEntry } from "../types/TimetableChangeEntry";
-import type { TimetableChangesServiceOptions } from "../types/TimetableChangesServiceOptions";
 import parse from "node-html-parser";
+import type { TimetableChangeEntry } from "../types";
+
+
+interface TimetableChangesServiceOptions {
+    changesUrl: string
+    changesSequence: string[]
+}
 
 export class TimetableChangesService {
     options: TimetableChangesServiceOptions = {} as TimetableChangesServiceOptions;
     changes: any[] = [];
 
-    constructor(options: TimetableChangesServiceOptions) {
+
+    configure(options: TimetableChangesServiceOptions) {
         this.options = options;
     }
+
 
     async fetchChanges() {
         const response = await fetch(this.options.changesUrl);

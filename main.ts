@@ -1,29 +1,29 @@
-import timetableChangesService from "./timetableChangesService";
-import timetableService from "./timetableService";
+import config from "./config";
+import { timetableService } from "./serviceProvider";
+import type { TimetableDayId } from "./types";
 
 
-timetableChangesService.fetchChanges()
-.then(() => {
-        
+
+timetableService.configure({
+    eduPageTimetableUrl: config.EDUPAGE_TIMETABLE_API_URL,
+    schoolId: config.DEV_SCHOOL_ID,
+    gsh: config.GSH
 });
 
-// timetableService.fetchTimetable()
-// .then(() => {
-//     const data = timetableService.data;
+timetableService.fetchData()
+.then((data) => {
+    timetableService.query({
+        day: "4",
+    }).map(card => {
+        const lesson = card.lesson;
 
-    
-//     const tarpe22 = timetableService.getClassByName("TARpe22");
-//     tarpe22?.timetable.query({
-//         day: 4,
-//     }).map(card => {
-//         const lesson = card.lesson;
-
-//         console.log(card.assignedDays[0].short, card.periodSpan);
-//     });
-    
-    
-    
-    
-//     // console.log(timetableService.data.periods);
-//     // timetableService.getPrettyTimetable()
-// });
+        console.log(`
+            Subject: ${lesson.subject.name}
+            Teacher: ${lesson.teachers[0].short}
+            Room: ${card.classrooms[0].name}
+            Periods: ${card.periodSpan.join("-")}
+            Day: ${card.assignedDays[0]?.name}
+        `);
+        
+    });
+});
