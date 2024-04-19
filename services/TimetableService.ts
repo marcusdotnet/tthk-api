@@ -43,7 +43,7 @@ export class TimetableService {
         const data = this.data
         const jsonData: TimetableApiDataJson = await response.json();
 
-        jsonData.r.dbiAccessorRes?.tables.forEach(table => {
+        jsonData!.r!.dbiAccessorRes!.tables.forEach(table => {
             const rows = table.data_rows as [{id: string}];
             const tableData: any = {};
             const instantianteFunc = instantiateDataObj[table.id] as unknown as any;
@@ -68,17 +68,14 @@ export class TimetableService {
         });
 
 
-
-        
-        Object.values(data.classes as unknown as TimetableClass[]).forEach(classData => {            
+        for (const classData of Object.values(data.classes as unknown as TimetableClass[])) {
             const name = classData.name.trim().toLowerCase();
-            
 
             const classObj = new TimetableClass();
             Object.assign(classObj, classData);            
 
             this.classLookup[name] = classData.id;
-        });
+        }
     }
 
     getClassNames(): [string] {

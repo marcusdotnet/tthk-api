@@ -1,6 +1,6 @@
 import config from "./config";
 import { timetableService } from "./serviceProvider";
-import type { TimetableDayId } from "./types";
+import type { TimetableClass, TimetableDayId } from "./types";
 
 
 
@@ -14,16 +14,17 @@ timetableService.fetchData()
 .then((data) => {
     timetableService.query({
         day: "4",
+        class: timetableService.getClassByName("TARpe22") as TimetableClass
     }).map(card => {
         const lesson = card.lesson;
 
         console.log(`
             Subject: ${lesson.subject.name}
             Teacher: ${lesson.teachers[0].short}
+            Classes: ${lesson.classes.map(cl => cl.name).join(", ")}
             Room: ${card.classrooms[0].name}
             Periods: ${card.periodSpan.join("-")}
             Day: ${card.assignedDays[0]?.name}
         `);
-        
     });
 });
