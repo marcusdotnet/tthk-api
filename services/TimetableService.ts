@@ -200,7 +200,7 @@ export class TimetableService {
 
         }
 
-        return Object.values(this.data.cards)
+        var filteredTimetable = Object.values(this.data.cards)
             .filter(card => {
                 if (query.class == null) return true;
 
@@ -228,6 +228,14 @@ export class TimetableService {
 
                 return query.periodEnd <= end;
             })
-            .filter(card => query.count != null ? card.lesson.count >= query.count : true);
+            .filter(card => query.count != null ? card.lesson.count >= query.count : true)
+            
+        if (query.day) {
+            filteredTimetable.sort((a, b) => {
+                return a.period - b.period;
+            });
+        }
+
+        return filteredTimetable;
     }
 }

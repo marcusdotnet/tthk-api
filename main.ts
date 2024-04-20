@@ -1,7 +1,7 @@
+import { write } from "bun";
 import { timetableChangesService, timetableService } from "./serviceProvider";
 import type { TimetableClass } from "./types/timetable/Class";
 import { QueryError } from "./types/timetable/internal/QueryError";
-
 
 
 
@@ -22,20 +22,24 @@ timetableService.configure({
 });
 
 timetableService.fetchData()
-.then((data) => {
+.then(() => {
+    var dayStr = "";
+
     timetableService.query({
-        day: "tue",
-        class: "TARpv22"
+        day: "fri",
+        class: "TARpe22"
     }).map(card => {
         const lesson = card.lesson;
 
-        console.log(`
-            Subject: ${lesson.subject.name}
-            Teacher: ${lesson.teachers[0].short}
-            Classes: ${lesson.classes.map(cl => cl.name).join(", ")}
-            Room: ${card.classrooms[0].name}
-            Periods: ${card.periodSpan.join("-")}
-            Day: ${card.assignedDays[0]?.name}
-        `);
+        dayStr += `
+Subject: ${lesson.subject.name}
+Teacher: ${lesson.teachers[0].short}
+Classes: ${lesson.classes.map(cl => cl.name).join(", ")}
+Room: ${card.classrooms[0].name}
+Day: ${card.assignedDays[0]?.name}
+Duration: ${card.timeSpan.join("-")}
+        `;
     });
+
+    write("test", dayStr);
 });

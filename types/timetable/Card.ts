@@ -11,7 +11,7 @@ export declare type TimetableCardId = string
 export class TimetableCard {
     id: TimetableCardId = ""
     locked: boolean = false
-    period: boolean = false
+    period: number = 0
     days: string = ""
     weeks: string = ""
 
@@ -52,5 +52,13 @@ export class TimetableCard {
         const end = (start + this.lesson.durationperiods) - 1;
 
         return [start, end];
+    }
+
+    get timeSpan(): string[] {
+        const [start, end] = this.periodSpan;
+        const startTime = timetableService.data.periods[start].starttime;
+        const endTime = timetableService.data.periods[end ? end : start].endtime;
+    
+        return [startTime, endTime];
     }
 }
