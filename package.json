@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "bun main.ts",
-    "dev": "bun --watch main.ts"
+    "dev": "bun --watch --env-file=.env main.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

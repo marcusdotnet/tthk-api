@@ -1,20 +1,31 @@
-import config from "./config";
-import { timetableService } from "./serviceProvider";
-import type { TimetableClass, TimetableDayId } from "./types";
+import { timetableChangesService, timetableService } from "./serviceProvider";
+import type { TimetableClass } from "./types/timetable/Class";
+import { QueryError } from "./types/timetable/internal/QueryError";
 
 
+
+
+// timetableChangesService.configure({
+//     changesUrl: process.env.TTHK_CHANGES_URL as string,
+//     changesSequence: process.env.TTHK_CHANGES_ORDER!.trim().split('"').filter(s => s != ",") as string[]
+// });
+
+// timetableChangesService.fetchChanges()
+// .then(data => {
+//     console.log(data);
+// });
 
 timetableService.configure({
-    eduPageTimetableUrl: config.EDUPAGE_TIMETABLE_API_URL,
-    schoolId: config.DEV_SCHOOL_ID,
-    gsh: config.GSH
+    eduPageTimetableUrl: process.env.EDUPAGE_TIMETABLE_API_URL as string,
+    schoolId: process.env.DEV_SCHOOL_ID as string,
+    gsh: process.env.GSH as string
 });
 
 timetableService.fetchData()
 .then((data) => {
     timetableService.query({
-        day: "4",
-        class: timetableService.getClassByName("TARpe22") as TimetableClass
+        day: "tue",
+        class: "TARpv22"
     }).map(card => {
         const lesson = card.lesson;
 

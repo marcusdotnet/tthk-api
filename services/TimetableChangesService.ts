@@ -1,11 +1,7 @@
 import parse from "node-html-parser";
-import type { TimetableChangeEntry } from "../types";
+import type { TimetableChangeEntry } from "../types/timetableChanges/ChangeEntry";
+import type { TimetableChangesServiceOptions } from "../types/timetableChanges/internal/ServiceOptions";
 
-
-interface TimetableChangesServiceOptions {
-    changesUrl: string
-    changesSequence: string[]
-}
 
 export class TimetableChangesService {
     options: TimetableChangesServiceOptions = {} as TimetableChangesServiceOptions;
@@ -18,6 +14,8 @@ export class TimetableChangesService {
 
 
     async fetchChanges() {
+        this.changes = [];
+
         const response = await fetch(this.options.changesUrl);
         const body = await response.text();
         const root = parse(body);
@@ -50,8 +48,7 @@ export class TimetableChangesService {
                 this.changes.push(changeEntry);
             }
         }
-        
 
-        console.log(this.changes);
+        return this.changes;
     }
 }
