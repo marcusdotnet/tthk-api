@@ -2,18 +2,16 @@ import { write } from "bun";
 import { timetableChangesService, timetableService } from "./serviceProvider";
 import type { TimetableClass } from "./types/timetable/Class";
 import { QueryError } from "./types/timetable/internal/QueryError";
+import app from "./api/server";
 
 
 
-// timetableChangesService.configure({
-//     changesUrl: process.env.TTHK_CHANGES_URL as string,
-//     changesSequence: process.env.TTHK_CHANGES_ORDER!.trim().split('"').filter(s => s != ",") as string[]
-// });
+timetableChangesService.configure({
+    changesUrl: process.env.TTHK_CHANGES_URL as string,
+    changesSequence: process.env.TTHK_CHANGES_ORDER!.trim().split('"').filter(s => s != ",") as string[]
+});
 
-// timetableChangesService.fetchChanges()
-// .then(data => {
-//     console.log(data);
-// });
+
 
 timetableService.configure({
     eduPageTimetableUrl: process.env.EDUPAGE_TIMETABLE_API_URL as string,
@@ -21,25 +19,11 @@ timetableService.configure({
     gsh: process.env.GSH as string
 });
 
-timetableService.fetchData()
-.then(() => {
-    var dayStr = "";
 
-    timetableService.query({
-        day: "fri",
-        class: "TARpe22"
-    }).map(card => {
-        const lesson = card.lesson;
-
-        dayStr += `
-Subject: ${lesson.subject.name}
-Teacher: ${lesson.teachers[0].short}
-Classes: ${lesson.classes.map(cl => cl.name).join(", ")}
-Room: ${card.classrooms[0].name}
-Day: ${card.assignedDays[0]?.name}
-Duration: ${card.timeSpan.join("-")}
-        `;
-    });
-
-    write("test", dayStr);
-});
+(async () => {
+    await timetableChangesService.fetchData();
+    await timetableService.fetchData();
+    
+    const port: Number = Number(process.env.API_PORT as unknown as string);
+    app.listen(port, () => console.log(`Listening on port ${port}`));
+})();

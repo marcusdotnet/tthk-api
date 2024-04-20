@@ -1,5 +1,6 @@
 import { TimetableCard } from "../types/timetable/Card";
 import { TimetableClass, type TimetableClassId } from "../types/timetable/Class";
+import type { TimetableClassroomId } from "../types/timetable/Classroom";
 import type { TimetableDayId } from "../types/timetable/Day";
 import { TimetableLesson } from "../types/timetable/Lesson";
 import type { TimetableQuery } from "../types/timetable/Query";
@@ -197,7 +198,23 @@ export class TimetableService {
                     throw new QueryError("That class doesn't exist!");
                 }
             }
+        }
 
+        if (query.room) {
+            const roomById = this.data.classrooms[query.room];
+
+            if (!roomById) {
+                const roomByName = Object.values(this.data.classrooms).find(r => {
+                    return r.name.toLowerCase().includes(query.room?.toLowerCase() as TimetableClassroomId) || r?.short.toLowerCase().includes(query.room?.toLowerCase() as TimetableClassroomId);
+                });
+
+                if (!roomByName) {
+                    throw new QueryError("Room not found!");
+                }
+                else {
+                    query.room = roomByName.id;
+                }
+            }
         }
 
         var filteredTimetable = Object.values(this.data.cards)
@@ -209,7 +226,7 @@ export class TimetableService {
             .filter(card => query.subjectQuery != null ? card.lesson.subject.name.toLowerCase().includes(query.subjectQuery.toLowerCase()) : true)
             .filter(card => {
                 if (query.day == null) return card.days != "";
-                const dayId: string | null = dayTranslations[query.day.toString()];
+                const dayId: string | null = dayTranslations[query.day.toString().toLowerCase()];
                 if (dayId == null) throw new QueryError("That is not a valid day!")
 
                 return card?.assignedDays.find(d => d.id == dayId) != null;
@@ -229,7 +246,8 @@ export class TimetableService {
                 return query.periodEnd <= end;
             })
             .filter(card => query.count != null ? card.lesson.count >= query.count : true)
-            
+            .filter(card => query.room != null ? card.classroomids.includes(query.room) : true);
+
         if (query.day) {
             filteredTimetable.sort((a, b) => {
                 return a.period - b.period;

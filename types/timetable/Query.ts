@@ -1,4 +1,5 @@
 import type { TimetableClass, TimetableClassId } from "./Class"
+import type { TimetableClassroomId } from "./Classroom"
 import type { TimetableDayId } from "./Day"
 import type { TimetablePeriodId } from "./Period"
 
@@ -12,4 +13,5 @@ export interface TimetableQuery {
     periodStart?:  number
     periodEnd?: number
     count?: number
+    room?: TimetableClassroomId | string
 }
