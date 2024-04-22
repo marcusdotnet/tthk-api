@@ -15,7 +15,7 @@ timetableChangesService.configure({
 
 timetableService.configure({
     eduPageTimetableUrl: process.env.EDUPAGE_TIMETABLE_API_URL as string,
-    schoolId: process.env.DEV_SCHOOL_ID as string,
+    year: new Date().getFullYear(),
     gsh: process.env.GSH as string
 });
 
@@ -25,19 +25,20 @@ timetableService.configure({
     await timetableService.fetchData();
 
 
-//     timetableService.query({
-//         periodEnd: 4
-//     }).map(card => console.log(`
-// Aine: ${card.lesson.subject.name}
-// Õpetaja: ${card.lesson.teachers[0]?.short}
-// Ruum: ${card.classrooms[0]?.name}
-// Aeg: ${card.timeSpan}
-// Päev: ${card.assignedDays[0].name}
-//     `));
+    //     timetableService.query({
+    //         periodEnd: 4
+    //     }).map(card => console.log(`
+    // Aine: ${card.lesson.subject.name}
+    // Õpetaja: ${card.lesson.teachers[0]?.short}
+    // Ruum: ${card.classrooms[0]?.name}
+    // Aeg: ${card.timeSpan}
+    // Päev: ${card.assignedDays[0].name}
+    //     `));
 
-    console.log(timetableChangesService.data);
-    
-    
-    const port: Number = Number(process.env.API_PORT as unknown as string);
-    app.listen(port, () => console.log(`Listening on port ${port}`));
+
+    console.log(timetableService.timetableStores["917"]);
+
+
+    // const port: Number = Number(process.env.API_PORT as unknown as string);
+    // app.listen(port, () => console.log(`Listening on port ${port}`));
 })();

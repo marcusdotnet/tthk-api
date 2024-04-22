@@ -1,5 +1,5 @@
 export interface TimetableServiceOptions {
     eduPageTimetableUrl: string
-    schoolId: string
+    year: number
     gsh: string
 }
