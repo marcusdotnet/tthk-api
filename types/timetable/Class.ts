@@ -62,4 +62,17 @@ export class TimetableClass {
 
         return this.#timetable;
     }
+
+    /**
+     * The dto for this object, used in the API.
+    */
+    get dto() {
+        return {
+            id: this.id,
+            name: this.name,
+            color: this.color,
+            teachers: this.teacherids,
+            classrooms: this.classroomids
+        }
+    }
 }

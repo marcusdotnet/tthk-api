@@ -62,3 +62,4 @@ export class TimetableCard {
         return [startTime, endTime];
     }
 }
+export default () => new TimetableCard();

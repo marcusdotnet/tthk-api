@@ -1,4 +1,4 @@
-import { TimetableCard } from "../types/timetable/Card";
+import { TimetableCard } from "../types/timetable/Card.mjs";
 import { TimetableClass, type TimetableClassId } from "../types/timetable/Class";
 import type { TimetableClassroomId } from "../types/timetable/Classroom";
 import type { TimetableDayId } from "../types/timetable/Day";
@@ -12,8 +12,9 @@ import type { TimetableApiDataJson } from "../types/timetable/internal/ApiDataJs
 import { TimetableDataStore } from "../types/timetable/internal/DataStore";
 import { QueryError } from "../types/timetable/internal/QueryError";
 import type { TimetableServiceOptions } from "../types/timetable/internal/ServiceOptions";
+import { readFile, writeFile, exists } from "fs/promises";
 
-const instantiateDataObj: Record<string, any> = {
+const instantiateTableClass: Record<string, any> = {
     classes: () => new TimetableClass(),
     lessons: () => new TimetableLesson(),
     daysdefs: () => new TimetableDayDefinition(),
@@ -82,17 +83,36 @@ export class TimetableService {
         this.options = options;
     }
 
-    async fetchData() {
+    async fetchData(useLocal?: boolean) {
         const options = this.options as TimetableServiceOptions;
         this.timetableStores = {};
+        var timetableConfigData: ApiConfigDataJson = {} as ApiConfigDataJson;
 
-        const timetableConfigData: ApiConfigDataJson = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/ttviewer.js?__func=getTTViewerData`, {
-            method: "POST",
-            body: JSON.stringify({
-                "__args": [null, 2023],
-                "__gsh": "00000000"
-            })
-        })).json());
+        const localFilePath: string = process!.env!.DEV_TIMETABLE_FILE as string;
+        const localFileExists = useLocal && await exists(localFilePath);
+        console.log(self);
+
+        if (!useLocal || !localFileExists) {            
+            timetableConfigData = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/ttviewer.js?__func=getTTViewerData`, {
+                method: "POST",
+                body: JSON.stringify({
+                    "__args": [null, 2023],
+                    "__gsh": "00000000"
+                })
+            })).json());
+
+            if (useLocal) {
+                await writeFile(localFilePath, JSON.stringify(timetableConfigData));
+                await this.fetchData(true);
+
+                return;
+            }
+        }
+        else {
+            const jsonStr: string = await readFile(localFilePath) as unknown as string;
+
+            timetableConfigData = JSON.parse(jsonStr)
+        }
 
         for (const timetableEntry of timetableConfigData.r.regular.timetables) {
             const timetableData: TimetableApiDataJson = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/regulartt.js?__func=regularttGetData`, {
@@ -112,11 +132,11 @@ export class TimetableService {
             timetableData!.r!.dbiAccessorRes!.tables.forEach(table => {
                 const rows = table.data_rows as [{ id: string }];
                 const dataTable: any = {};
-                const instantianteFunc = instantiateDataObj[table.id] as unknown as any;
-
+                const instantiateClassObj = instantiateTableClass[table.id] as unknown as any;
+            
                 for (var row of rows) {
-                    if (typeof instantianteFunc == "function") {
-                        const rowObj = instantianteFunc();
+                    if (typeof instantiateClassObj == "function") {
+                        const rowObj = instantiateClassObj();
                         Object.assign(rowObj, row);
 
                         dataTable[row.id] = rowObj;
@@ -135,4 +155,49 @@ export class TimetableService {
             this.timetableStores[timetableEntry.tt_num] = dataStore;
         }
     }
+
+    query(timetableId: string, tableName: 
+        "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
+        | "classrooms" | "classes" | "subjects" | "teachers" | "groups" | "divisions" | "students" | "lessons" | "studentsubjects" | "cards" | "classroomsupervisions" , 
+        filter: Object) {
+        const timetableStore = timetableId && Object.keys(this.timetableStores).includes(timetableId) && this.timetableStores[timetableId];
+        if (!timetableStore) return false;
+
+        var filtered: any[] = [];
+    
+        //@ts-ignore
+        for (const entry of Object.values(timetableStore[tableName])) {
+            var requirementsMet = true;
+
+            for (const [filterKey, filterValue] of Object.entries(filter)) {
+                //@ts-ignore
+                const srcValue: any | undefined = Object.keys(entry).includes(filterKey) && entry[filterKey];
+
+                if (!srcValue || !checkMeetsQueryFilter(srcValue, filterValue)) {
+                    requirementsMet = false;
+                };
+            }
+
+            if (!requirementsMet) continue;
+
+            filtered.push(entry);
+        }
+
+
+        return filtered;
+    }
+}
+
+
+function checkMeetsQueryFilter(src: any, filter: any): boolean {
+    if (typeof filter != "function" && (typeof src != typeof filter)) return false;
+
+    if (typeof src == "string") {
+        return src.toLowerCase().includes(filter.toLowerCase());
+    }
+    else if (typeof filter == "function") {
+        return filter(src);
+    }
+    
+    return src == filter;
 }
