@@ -5,7 +5,7 @@ import type { TimetableChangesServiceOptions } from "../types/timetableChanges/i
 
 export class TimetableChangesService {
     options: TimetableChangesServiceOptions = {} as TimetableChangesServiceOptions;
-    data: TimetableChangeEntry[] = [];
+    changes: TimetableChangeEntry[] = [];
 
 
     configure(options: TimetableChangesServiceOptions) {
@@ -14,7 +14,7 @@ export class TimetableChangesService {
 
 
     async fetchData() {
-        this.data = [];
+        this.changes = [];
 
         const response = await fetch(this.options.changesUrl);
         const body = await response.text();
@@ -24,7 +24,7 @@ export class TimetableChangesService {
         for (const tableBody of root.querySelectorAll("table tbody")) {
             const firstRow = tableBody.firstChild;
             if (!firstRow || firstRow.childNodes.length < 5) continue;
-            
+
             var rowIndex = -1;
             for (const tr of tableBody.childNodes) {
                 rowIndex++;
@@ -45,10 +45,10 @@ export class TimetableChangesService {
                     changeInfoIndex++;
                 }
 
-                this.data.push(changeEntry);
+                this.changes.push(changeEntry);
             }
         }
 
-        return this.data;
+        return this.changes;
     }
 }

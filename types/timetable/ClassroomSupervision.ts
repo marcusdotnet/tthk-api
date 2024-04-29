@@ -6,5 +6,6 @@ export declare type TimetableClassroomSupervisionId = string
     The interface for a timetable classroom supervision
 */
 export interface TimetableClassroomSupervision {
+    ttid: string
     id: TimetableClassroomSupervisionId
 }

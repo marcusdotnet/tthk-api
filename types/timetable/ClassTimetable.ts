@@ -8,12 +8,13 @@ import type { TimetableQuery } from "./Query";
     The interface for a class timetable
 */
 export class ClassTimetable {
+    ttid: string = ""
     id: TimetableClassId = "";
     #cards: TimetableCard[] = [];
-    
+
     constructor(classId: TimetableClassId) {
         this.id = classId;
-        this.#cards = (Object.values(timetableService.data.cards) as TimetableCard[])
+        this.#cards = (Object.values(timetableService.timetableStores[this.ttid].cards) as TimetableCard[])
             .filter(card => card.lesson.classids.includes(classId));
     }
 

@@ -14,7 +14,7 @@ export class TimetableWeekDefinition {
         const weekObjs = [];
 
         var i = 0;
-        for (const week of Object.entries(timetableService.data.weeks)) {
+        for (const week of Object.entries(timetableService.timetableStores[this.ttid].weeks)) {
             const val = this.vals[i];
 
             if (val === "1") {

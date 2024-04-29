@@ -14,7 +14,7 @@ export class TimetableTermDefinition {
         const termObjs = [];
 
         var i = 0;
-        for (const term of Object.entries(timetableService.data.terms)) {
+        for (const term of Object.entries(timetableService.timetableStores[this.ttid].terms)) {
             const val = this.vals[i];
 
             if (val === "1") {

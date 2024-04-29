@@ -5,9 +5,10 @@ export declare type TimetableGlobalId = string
     The interface for a timetable global
 */
 export interface TimetableGlobal {
+    ttid: string
     id: TimetableGlobalId
     name: string
-    settings: {draft_options: {}}
+    settings: { draft_options: {} }
     customfields: []
     reg_name: string
     tt_datefrom: string

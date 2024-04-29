@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { timetableService } from "../../serviceProvider";
 import type { TimetableClass } from "../../types/timetable/Class";
 
 const ClassRouter = Router();

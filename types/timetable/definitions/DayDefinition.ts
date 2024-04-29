@@ -20,7 +20,7 @@ export class TimetableDayDefinition {
                 i++;
 
                 if (digit == "0") continue;
-                const day = timetableService.data.days[i];
+                const day = timetableService.timetableStores[this.ttid].days[i];
 
                 days.push(day);
             }

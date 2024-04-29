@@ -7,6 +7,7 @@ export declare type TimetableClassroomId = string
     The interface for a timetable classroom
 */
 export class TimetableClassroom {
+    ttid: string = ""
     id: TimetableClassroomId = ""
     name: string = ""
     short: string = ""

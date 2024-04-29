@@ -2,6 +2,7 @@
 export declare type TimetableDivisionId = string
 
 export interface TimetableDivision {
+    ttid: string
     id: TimetableDivisionId
     classid: string
     ascttdivision: string

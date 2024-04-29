@@ -8,6 +8,7 @@ export declare type TimetablePeriodStr = string
     The interface for a timetable period
 */
 export interface TimetablePeriod {
+    ttid: string
     id: TimetablePeriodId
     period: TimetablePeriodStr
     name: string

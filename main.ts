@@ -22,7 +22,7 @@ timetableService.configure({
 
 
 (async () => {
-    // await timetableChangesService.fetchData();
+    await timetableChangesService.fetchData();
     await timetableService.fetchData(true);
 
     const port: Number = Number(process.env.API_PORT as unknown as string);

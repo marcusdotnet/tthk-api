@@ -1,5 +1,4 @@
 import { Router } from "express";
-import TimetableMiddleware from "../middleware/timetable";
 import { timetableService } from "../../serviceProvider";
 
 const TimetableRouter = Router();

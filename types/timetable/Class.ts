@@ -10,6 +10,7 @@ export declare type TimetableClassId = string
     The class for a timetable class
 */
 export class TimetableClass {
+    ttid: string = ""
     id: TimetableClassId = "";
     name: string = "";
     short: string = "";
@@ -22,13 +23,13 @@ export class TimetableClass {
     classroomid: string = "";
     classroomids: TimetableClassroomId[] = [];
     get classroom(): TimetableClassroom | null {
-        return timetableService.data.classrooms[this.classroomid] || null;
+        return timetableService.timetableStores[this.ttid].classrooms[this.classroomid] || null;
     }
 
     get classrooms() {
         const classrooms: TimetableClassroom[] = [];
         for (const classroomid of this.classroomids) {
-            const classroom = timetableService.data.classrooms[classroomid];
+            const classroom = timetableService.timetableStores[this.ttid].classrooms[classroomid];
 
             classrooms.push(classroom);
         }
@@ -39,14 +40,14 @@ export class TimetableClass {
     teacherid: string = "";
     teacherids: TimetableTeacherId[] = [];
     get teacher(): TimetableTeacher | null {
-        return timetableService.data.teachers[this.teacherid] || null;
+        return timetableService.timetableStores[this.ttid].teachers[this.teacherid] || null;
     }
 
     get teachers(): TimetableTeacher[] {
         const teachers: TimetableTeacher[] = [];
 
         for (const teacherId of this.teacherids) {
-            const teacher = timetableService.data.teachers[teacherId];
+            const teacher = timetableService.timetableStores[this.ttid].teachers[teacherId];
 
             teachers.push(teacher);
         }

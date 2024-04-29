@@ -1,9 +1,9 @@
 import { timetableService } from "../../serviceProvider";
-import type { TimetableClassId } from "./Class";
-import type { TimetableGroupId } from "./Group";
-import type { TimetableStudentId } from "./Student";
-import type { TimetableSubjectId } from "./Subject";
-import type { TimetableTeacherId } from "./Teacher";
+import type { TimetableClass, TimetableClassId } from "./Class";
+import type { TimetableGroup, TimetableGroupId } from "./Group";
+import type { TimetableStudent, TimetableStudentId } from "./Student";
+import type { TimetableSubject, TimetableSubjectId } from "./Subject";
+import type { TimetableTeacher, TimetableTeacherId } from "./Teacher";
 import type { TimetableDayDefinitionId } from "./definitions/DayDefinition";
 import type { TimetableTermDefinitionId } from "./definitions/TermDefinition";
 import type { TimetableWeekDefinitionId } from "./definitions/WeekDefinition";
@@ -15,6 +15,7 @@ export declare type TimetableLessonId = string
     The class for a timetable lesson
 */
 export class TimetableLesson {
+    ttid: string = ""
     id: TimetableLessonId = "";
     count: number = 0;
     durationperiods: number = 0;
@@ -23,34 +24,34 @@ export class TimetableLesson {
     texts: any | null = null;
     groupnames: string[] = [];
     classdata: {} = {};
-    
-    
+
+
     termsdefid: TimetableTermDefinitionId = "";
     get term() {
-        return timetableService.data.termsdefs[this.termsdefid];
+        return timetableService.timetableStores[this.ttid].termsdefs[this.termsdefid];
     }
 
     weeksdefid: TimetableWeekDefinitionId = "";
     get weekdef() {
-        return timetableService.data.weeksdefs[this.weeksdefid];
+        return timetableService.timetableStores[this.ttid].weeksdefs[this.weeksdefid];
     }
 
     daysdefid: TimetableDayDefinitionId = "";
     get daysdef() {
-        return timetableService.data.daysdefs[this.daysdefid];
+        return timetableService.timetableStores[this.ttid].daysdefs[this.daysdefid];
     }
 
     subjectid: TimetableSubjectId = "";
-    get subject() {
-        return timetableService.data.subjects[this.subjectid];
+    get subject(): TimetableSubject {
+        return timetableService.timetableStores[this.ttid].subjects[this.subjectid];
     }
 
     teacherids: TimetableTeacherId[] = [];
-    get teachers() {
+    get teachers(): TimetableTeacher[] {
         const teachers = [];
 
         for (const teacherId of this.teacherids) {
-            const teacher = timetableService.data.teachers[teacherId];
+            const teacher = timetableService.timetableStores[this.ttid].teachers[teacherId];
 
             teachers.push(teacher);
         }
@@ -59,11 +60,11 @@ export class TimetableLesson {
     }
 
     groupids: TimetableGroupId[] = [];
-    get groups() {
+    get groups(): TimetableGroup[] {
         const groups = [];
 
         for (const groupId of this.groupids) {
-            const group = timetableService.data.groups[groupId];
+            const group = timetableService.timetableStores[this.ttid].groups[groupId];
 
             groups.push(group);
         }
@@ -72,11 +73,11 @@ export class TimetableLesson {
     }
 
     classids: TimetableClassId[] = [];
-    get classes() {
+    get classes(): TimetableClass[] {
         const classes = [];
 
         for (const classId of this.classids) {
-            const classObj = timetableService.data.classes[classId];
+            const classObj = timetableService.timetableStores[this.ttid].classes[classId];
 
             classes.push(classObj);
         }
@@ -85,11 +86,11 @@ export class TimetableLesson {
     }
 
     studentids: TimetableStudentId[] = [];
-    get students() {
+    get students(): TimetableStudent[] {
         const students = [];
 
         for (const studentId of this.studentids) {
-            const student = timetableService.data.students[studentId];
+            const student = timetableService.timetableStores[this.ttid].students[studentId];
 
             students.push(student);
         }

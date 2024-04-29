@@ -7,6 +7,7 @@ import type { TimetablePeriodId } from "./Period"
     The interface for a timetable query
 */
 export interface TimetableQuery {
+    ttid: string
     class?: TimetableClassId | string
     subjectQuery?: string
     day?: TimetableDayId | number

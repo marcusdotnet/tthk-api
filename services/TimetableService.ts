@@ -4,6 +4,8 @@ import type { TimetableClassroomId } from "../types/timetable/Classroom";
 import type { TimetableDayId } from "../types/timetable/Day";
 import { TimetableLesson } from "../types/timetable/Lesson";
 import type { TimetableQuery } from "../types/timetable/Query";
+import { TimetableSubject } from "../types/timetable/Subject";
+import { TimetableTeacher } from "../types/timetable/Teacher";
 import { TimetableDayDefinition } from "../types/timetable/definitions/DayDefinition";
 import { TimetableTermDefinition } from "../types/timetable/definitions/TermDefinition";
 import { TimetableWeekDefinition } from "../types/timetable/definitions/WeekDefinition";
@@ -16,7 +18,9 @@ import { readFile, writeFile, exists } from "fs/promises";
 
 const instantiateTableClass: Record<string, any> = {
     classes: () => new TimetableClass(),
+    teachers: () => new TimetableTeacher(),
     lessons: () => new TimetableLesson(),
+    subjects: () => new TimetableSubject(),
     daysdefs: () => new TimetableDayDefinition(),
     weeksdefs: () => new TimetableWeekDefinition(),
     termsdefs: () => new TimetableTermDefinition(),
@@ -140,6 +144,9 @@ export class TimetableService {
                 for (var row of rows) {
                     if (typeof instantiateClassObj == "function") {
                         const rowObj = instantiateClassObj();
+                        Object.assign(rowObj, {
+                            ttid: timetableEntry.tt_num
+                        });
                         Object.assign(rowObj, row);
 
                         dataTable[row.id] = rowObj;
@@ -171,9 +178,9 @@ export class TimetableService {
 
             for (const [filterKey, filterValue] of Object.entries(filter)) {
                 if (filterValue == undefined || filterValue == null) continue;
+                if (!Object.keys(entry).includes(filterKey)) continue;
 
-                //@ts-ignore
-                const srcValue: any | undefined = Object.keys(entry).includes(filterKey) && entry[filterKey];
+                const srcValue: any | undefined = entry[filterKey];
 
                 if (!srcValue || !checkMeetsQueryFilter(srcValue, filterValue)) {
                     requirementsMet = false;
