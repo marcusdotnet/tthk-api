@@ -3,6 +3,7 @@ import { timetableChangesService, timetableService } from "./serviceProvider";
 import type { TimetableClass } from "./types/timetable/Class";
 import { QueryError } from "./types/timetable/internal/QueryError";
 import app from "./api/server";
+import { TimetableCard } from "./types/timetable/Card";
 
 
 
@@ -24,11 +25,6 @@ timetableService.configure({
     // await timetableChangesService.fetchData();
     await timetableService.fetchData(true);
 
-    console.log(timetableService.query("917", "classes", {
-        name: "tarpe22"
-    })[0].dto);
-
-
-    // const port: Number = Number(process.env.API_PORT as unknown as string);
-    // app.listen(port, () => console.log(`Listening on port ${port}`));
+    const port: Number = Number(process.env.API_PORT as unknown as string);
+    app.listen(port, () => console.log(`Listening on port ${port}`));
 })();

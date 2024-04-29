@@ -57,4 +57,6 @@ export class TimetableDataStore {
     studentsubjects: Record<TimetableStudentSubjectId, TimetableStudentSubject> = {};
     cards: Record<TimetableCardId, TimetableCard> = {};
     classroomsupervisions: Record<TimetableClassroomSupervisionId, TimetableClassroomSupervision> = {};
+
+    dto: any = {};
 }

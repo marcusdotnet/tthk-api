@@ -41,7 +41,7 @@ export class TimetableCard {
 
         return classrooms;
     }
-    
+
     lessonid: TimetableLessonId = ""
     get lesson() {
         return timetableService.data.lessons[this.lessonid];
@@ -58,8 +58,7 @@ export class TimetableCard {
         const [start, end] = this.periodSpan;
         const startTime = timetableService.data.periods[start].starttime;
         const endTime = timetableService.data.periods[end ? end : start].endtime;
-    
+
         return [startTime, endTime];
     }
 }
-export default () => new TimetableCard();

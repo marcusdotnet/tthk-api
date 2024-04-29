@@ -1,4 +1,4 @@
-import { TimetableCard } from "../types/timetable/Card.mjs";
+import { TimetableCard } from "../types/timetable/Card";
 import { TimetableClass, type TimetableClassId } from "../types/timetable/Class";
 import type { TimetableClassroomId } from "../types/timetable/Classroom";
 import type { TimetableDayId } from "../types/timetable/Day";
@@ -69,6 +69,10 @@ const dayTranslations: Record<string, string> = {
 }
 
 
+export declare type TimetableQueryTableName = "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
+    | "classrooms" | "classes" | "subjects" | "teachers" | "groups" | "divisions" | "students" | "lessons" | "studentsubjects" | "cards" | "classroomsupervisions";
+
+
 
 /**
  * The service that makes accessing timetable data easy
@@ -90,9 +94,8 @@ export class TimetableService {
 
         const localFilePath: string = process!.env!.DEV_TIMETABLE_FILE as string;
         const localFileExists = useLocal && await exists(localFilePath);
-        console.log(self);
 
-        if (!useLocal || !localFileExists) {            
+        if (!useLocal || !localFileExists) {
             timetableConfigData = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/ttviewer.js?__func=getTTViewerData`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -124,8 +127,8 @@ export class TimetableService {
             })).json());
 
 
-
             const dataStore: TimetableDataStore = new TimetableDataStore(timetableEntry);
+            dataStore.dto = timetableEntry;
 
             // copy everything from the timetable's data rows and
             // turn them into instances of custom classes if possible
@@ -133,7 +136,7 @@ export class TimetableService {
                 const rows = table.data_rows as [{ id: string }];
                 const dataTable: any = {};
                 const instantiateClassObj = instantiateTableClass[table.id] as unknown as any;
-            
+
                 for (var row of rows) {
                     if (typeof instantiateClassObj == "function") {
                         const rowObj = instantiateClassObj();
@@ -156,20 +159,19 @@ export class TimetableService {
         }
     }
 
-    query(timetableId: string, tableName: 
-        "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
-        | "classrooms" | "classes" | "subjects" | "teachers" | "groups" | "divisions" | "students" | "lessons" | "studentsubjects" | "cards" | "classroomsupervisions" , 
-        filter: Object) {
+    query(timetableId: string | undefined, tableName: TimetableQueryTableName, filter: Object) {
         const timetableStore = timetableId && Object.keys(this.timetableStores).includes(timetableId) && this.timetableStores[timetableId];
         if (!timetableStore) return false;
 
         var filtered: any[] = [];
-    
+
         //@ts-ignore
         for (const entry of Object.values(timetableStore[tableName])) {
             var requirementsMet = true;
 
             for (const [filterKey, filterValue] of Object.entries(filter)) {
+                if (filterValue == undefined || filterValue == null) continue;
+
                 //@ts-ignore
                 const srcValue: any | undefined = Object.keys(entry).includes(filterKey) && entry[filterKey];
 
@@ -198,6 +200,6 @@ function checkMeetsQueryFilter(src: any, filter: any): boolean {
     else if (typeof filter == "function") {
         return filter(src);
     }
-    
+
     return src == filter;
 }

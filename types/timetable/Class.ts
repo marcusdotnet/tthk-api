@@ -18,7 +18,7 @@ export class TimetableClass {
     customfields: [] = [];
     printsubjectpictures: boolean = false;
     edupageid: string = "";
-    
+
     classroomid: string = "";
     classroomids: TimetableClassroomId[] = [];
     get classroom(): TimetableClassroom | null {
@@ -35,10 +35,10 @@ export class TimetableClass {
 
         return classrooms;
     }
-    
+
     teacherid: string = "";
     teacherids: TimetableTeacherId[] = [];
-    get teacher(): TimetableTeacher | null {        
+    get teacher(): TimetableTeacher | null {
         return timetableService.data.teachers[this.teacherid] || null;
     }
 
@@ -66,7 +66,7 @@ export class TimetableClass {
     /**
      * The dto for this object, used in the API.
     */
-    get dto() {
+    public get dto() {
         return {
             id: this.id,
             name: this.name,

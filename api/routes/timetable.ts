@@ -1,9 +1,14 @@
 import { Router } from "express";
+import TimetableMiddleware from "../middleware/timetable";
+import { timetableService } from "../../serviceProvider";
 
-const router = Router();
+const TimetableRouter = Router();
 
-router.get("/", (req, res) => {
-    res.send({message: "hi"});
+
+
+
+TimetableRouter.get("/", (req, res) => {
+    res.send(Object.values(timetableService.timetableStores).map(ttStore => ttStore.dto));
 })
 
-export default router;
+export default TimetableRouter;
