@@ -5,24 +5,24 @@ import type { TimetableTeacher } from "../../types/timetable/Teacher";
 const TeacherRouter = Router();
 
 TeacherRouter.get("/", (req, res) => {
-    const data: TimetableTeacher[] | undefined = req.timetableQuery("teachers", req.query) as TimetableTeacher[];
-
-    if (!data) return res.sendStatus(404);
+    const teachers: TimetableTeacher[] | undefined = req.timetableQuery("teachers", req.query) as TimetableTeacher[];
+    if (!teachers) return res.sendStatus(404);
+    const isPretty = req.query && typeof req.query?.pretty == "string";
 
     res.status(200);
-    return res.json(data.map(teacher => teacher.dto));
+    return res.json(teachers.map(teacher => isPretty ? teacher.prettyDto : teacher.dto));
 });
 
 TeacherRouter.get("/:teacherId", (req, res) => {
-    const data: TimetableTeacher | undefined = (req.timetableQuery("teachers", {
+    const teacher: TimetableTeacher | undefined = (req.timetableQuery("teachers", {
         id: req.params.teacherId
     }) as TimetableTeacher[])[0] as TimetableTeacher;
 
-    if (!data) return res.sendStatus(404);
-
+    if (!teacher) return res.sendStatus(404);
+    const isPretty = req.query && typeof req.query?.pretty == "string";
 
     res.status(200);
-    return res.send(data.dto);
+    return res.send(isPretty ? teacher.prettyDto : teacher.dto);
 });
 
 export default TeacherRouter;

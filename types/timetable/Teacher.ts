@@ -1,4 +1,5 @@
-import type { TimetableClassId } from "./Class"
+import { timetableService } from "../../serviceProvider"
+import type { TimetableClass, TimetableClassId } from "./Class"
 
 /** The ID string for a timetable teacher */
 export declare type TimetableTeacherId = string
@@ -20,6 +21,15 @@ export class TimetableTeacher {
     }] | null = null
     edupageid: string = ""
     classids: TimetableClassId[] = []
+    get taught_classes() {
+        const taughtClasses = timetableService.query(this.ttid, "classes", {
+            id: (cl: TimetableClass) => {
+                return cl.teacherids.includes(this.id); // weird bug here, fix later, painnnnnn, the painnnnnn
+            }
+        }) as TimetableClass[];
+
+        return taughtClasses;
+    }
 
     get dto() {
         return {
@@ -28,5 +38,16 @@ export class TimetableTeacher {
             color: this.color,
             taught_classes: this.classids
         }
+    }
+
+    get prettyDto() {
+        const prettyDtoObj: any = {
+            id: this.id,
+            name: this.short,
+            color: this.color,
+        };
+
+        prettyDtoObj.taught_classes = this.taught_classes.map(classObj => classObj?.name || classObj?.short);
+        return prettyDtoObj;
     }
 }

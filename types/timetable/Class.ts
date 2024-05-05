@@ -76,4 +76,30 @@ export class TimetableClass {
             classrooms: this.classroomids
         }
     }
+
+    public get prettyDto() {
+        const prettyDtoObj: any = {
+            id: this.id,
+            name: this.name,
+            color: this.color,
+        };
+
+        const prettyClassrooms = this.classrooms.map(room => room?.short || room?.name);
+        if (this.classroomids.length > 1) {
+            prettyDtoObj.rooms = prettyClassrooms;
+        }
+        else if (this.classroomids.length == 1) {
+            prettyDtoObj.room = prettyClassrooms[0]
+        }
+
+        const prettyTeachers = this.teachers.map(teacher => teacher?.short || "no_name");
+        if (prettyTeachers.length > 1) {
+            prettyDtoObj.teachers = prettyTeachers;
+        }
+        else if (prettyTeachers.length == 1) {
+            prettyDtoObj.teacher = prettyTeachers[0];
+        }
+
+        return prettyDtoObj;
+    }
 }

@@ -2,6 +2,7 @@ import { timetableService } from "../../serviceProvider"
 import type { TimetableClassroom, TimetableClassroomId } from "./Classroom"
 import type { TimetableDay } from "./Day"
 import type { TimetableLesson, TimetableLessonId } from "./Lesson"
+import type { TimetableTeacher } from "./Teacher"
 
 /** The ID string for a timetable card */
 export declare type TimetableCardId = string
@@ -67,11 +68,62 @@ export class TimetableCard {
     get dto() {
         return {
             id: this.id,
-            subject: this.lesson.subject.name,
+            subject: this.lesson.subjectid,
             teachers: this.lesson.teacherids,
             rooms: this.classroomids,
             period_span: this.periodSpan,
             days: this.assignedDays
         }
+    }
+
+    get prettyDto() {
+        const lesson = this.lesson;
+        const subject = lesson.subject;
+
+        const periodSpan = this.periodSpan;
+        const [startPeriod, endPeriod] = this.periodSpan;
+
+        const prettyDtoObj: any = {
+            id: this.id,
+            subject: (subject?.name || subject?.short || undefined),
+            time_span: this.timeSpan.join("-"),
+            period_span: startPeriod != endPeriod ? periodSpan.join("-") : startPeriod.toString(),
+        }
+
+
+        const prettyDays = this.assignedDays.map(ad => ad?.name || ad?.short);
+        if (prettyDays.length > 1) {
+            prettyDtoObj.days = prettyDays;
+        }
+        else {
+            prettyDtoObj.day = prettyDays[0];
+        }
+
+        const prettyClassrooms = this.classrooms.map(room => room?.short || room?.name);
+        if (this.classroomids.length > 1) {
+            prettyDtoObj.rooms = prettyClassrooms;
+        }
+        else if (this.classroomids.length == 1) {
+            prettyDtoObj.room = prettyClassrooms[0]
+        }
+
+        const prettyTeachers = lesson.teachers.map(teacher => teacher?.short || "no_name");
+
+        if (prettyTeachers.length > 1) {
+            prettyDtoObj.teachers = prettyTeachers;
+        }
+        else if (prettyTeachers.length == 1) {
+            prettyDtoObj.teacher = prettyTeachers[0];
+        }
+
+        const prettyClasses = lesson.classes.map(cl => cl?.name || cl?.short);
+        if (lesson.classids.length > 1) {
+            prettyDtoObj.classes = prettyClasses
+        }
+        else if (lesson.classids.length == 1) {
+            prettyDtoObj.class = prettyClasses[0];
+        }
+
+        return prettyDtoObj;
     }
 }

@@ -166,7 +166,7 @@ export class TimetableService {
         }
     }
 
-    query(timetableId: string | undefined, tableName: TimetableQueryTableName, filter: Object) {
+    query(timetableId: string | undefined, tableName: TimetableQueryTableName, filter: TimetableDataStore[TimetableQueryTableName]) {
         const timetableStore = timetableId && Object.keys(this.timetableStores).includes(timetableId) && this.timetableStores[timetableId];
         if (!timetableStore) return false;
 
@@ -201,11 +201,11 @@ export class TimetableService {
 function checkMeetsQueryFilter(src: any, filter: any): boolean {
     if (typeof filter != "function" && (typeof src != typeof filter)) return false;
 
-    if (typeof src == "string") {
-        return src.toLowerCase().includes(filter.toLowerCase());
-    }
-    else if (typeof filter == "function") {
+    if (typeof filter == "function") {
         return filter(src);
+    }
+    else if (typeof src == "string") {
+        return src.toLowerCase().includes(filter.toLowerCase());
     }
 
     return src == filter;

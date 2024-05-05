@@ -14,30 +14,7 @@ LessonsRouter.get("/", (req, res) => {
 
     res.status(200);
     return res.json(cards.map(card => {
-        const dto = card.dto;
-
-        //@ts-ignore
-        if (!isPretty) return dto;
-
-        const prettyDto: any = {} as TimetableCard["dto"];
-        console.log("dto", dto);
-        Object.assign(prettyDto, dto);
-        prettyDto.teachers = dto.teachers.map(teacherId => (
-            req.timetableQuery("teachers", { id: teacherId }) as TimetableTeacher[])[0].short
-        )
-
-        prettyDto.rooms = dto.teachers.map(roomId => {
-            const rooms = req.timetableQuery("classrooms", { id: roomId }) as TimetableClassroom[];
-
-            return rooms.length > 0 && (rooms[0]?.short || rooms[0]?.name);
-        });
-
-        prettyDto.days = undefined;
-        prettyDto.day = dto.days.length > 0 && dto.days[0].name
-        prettyDto.time_span = card.timeSpan.join("-");
-
-
-        return prettyDto;
+        return isPretty ? card.prettyDto : card.dto;
     }));
 });
 
@@ -45,12 +22,14 @@ LessonsRouter.get("/:lessonId", (req, res) => {
     const card: TimetableCard | undefined = (req.timetableQuery("cards", {
         id: req.params.lessonId
     }) as TimetableCard[])[0] as TimetableCard;
-
     if (!card) return res.sendStatus(404);
+
+    const isPretty = req.query && typeof req.query?.pretty == "string";
+
 
 
     res.status(200);
-    return res.send(card.dto);
+    return res.send(isPretty ? card.prettyDto : card.dto);
 });
 
 export default LessonsRouter;
