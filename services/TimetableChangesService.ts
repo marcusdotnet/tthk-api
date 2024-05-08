@@ -8,8 +8,11 @@ export class TimetableChangesService {
     changes: TimetableChangeEntry[] = [];
 
 
-    configure(options: TimetableChangesServiceOptions) {
-        this.options = options;
+    configure() {
+        this.options = {
+            changesUrl: process.env.TTHK_CHANGES_URL as string,
+            changesSequence: process.env.TTHK_CHANGES_ORDER!.trim().split('"').filter(s => s != ",") as string[]
+        }
     }
 
 

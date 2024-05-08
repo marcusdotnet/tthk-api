@@ -4,9 +4,9 @@ import type { TimetableGroup, TimetableGroupId } from "./Group";
 import type { TimetableStudent, TimetableStudentId } from "./Student";
 import type { TimetableSubject, TimetableSubjectId } from "./Subject";
 import type { TimetableTeacher, TimetableTeacherId } from "./Teacher";
-import type { TimetableDayDefinitionId } from "./definitions/DayDefinition";
-import type { TimetableTermDefinitionId } from "./definitions/TermDefinition";
-import type { TimetableWeekDefinitionId } from "./definitions/WeekDefinition";
+import type { TimetableDayDefinitionId } from "./DayDefinition";
+import type { TimetableTermDefinitionId } from "./TermDefinition";
+import type { TimetableWeekDefinitionId } from "./WeekDefinition";
 
 /** The ID string for a timetable lesson */
 export declare type TimetableLessonId = string

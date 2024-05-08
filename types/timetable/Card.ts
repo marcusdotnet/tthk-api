@@ -3,6 +3,7 @@ import type { TimetableClassroom, TimetableClassroomId } from "./Classroom"
 import type { TimetableDay } from "./Day"
 import type { TimetableLesson, TimetableLessonId } from "./Lesson"
 import type { TimetableTeacher } from "./Teacher"
+export const TABLE_NAME = "cards";
 
 /** The ID string for a timetable card */
 export declare type TimetableCardId = string
