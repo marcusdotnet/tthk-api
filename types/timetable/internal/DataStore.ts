@@ -11,7 +11,6 @@ import type { TimetableGlobalId, TimetableGlobal } from "../Global"
 import type { TimetableGroupId, TimetableGroup } from "../Group"
 import type { TimetableLessonId, TimetableLesson } from "../Lesson"
 import type { TimetablePeriodId, TimetablePeriod } from "../Period"
-import type { TimetableQuery } from "../Query"
 import type { TimetableStudentId, TimetableStudent } from "../Student"
 import type { TimetableStudentSubjectId, TimetableStudentSubject } from "../StudentSubject"
 import type { TimetableSubjectId, TimetableSubject } from "../Subject"
@@ -22,7 +21,6 @@ import type { TimetableDayDefinitionId, TimetableDayDefinition } from "../DayDef
 import type { TimetableTermDefinitionId, TimetableTermDefinition } from "../TermDefinition"
 import type { TimetableWeekDefinitionId, TimetableWeekDefinition } from "../WeekDefinition"
 import type { ApiTimetable } from "./ApiConfigDataJson"
-import { QueryError } from "./QueryError"
 
 
 /**

@@ -1,5 +1,7 @@
 import type { TimetableBuildingId } from "./Building"
 
+export const TABLE_NAME = "classrooms";
+
 /** The ID string for a timetable classroom */
 export declare type TimetableClassroomId = string
 

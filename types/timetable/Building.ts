@@ -5,7 +5,7 @@ export const TABLE_NAME = "buildings";
 /**
     The interface for a timetable building
 */
-export interface TimetableBuilding {
-    ttid: string
-    id: TimetableBuildingId
+export class TimetableBuilding {
+    ttid: string = ""
+    id: TimetableBuildingId = ""
 }

@@ -4,6 +4,7 @@ import type { TimetableClassId } from "./Class";
 import type { TimetableDayId } from "./Day";
 import type { TimetableQuery } from "./Query";
 
+
 /**
     The interface for a class timetable
 */

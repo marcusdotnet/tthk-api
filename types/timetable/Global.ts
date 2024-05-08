@@ -1,15 +1,17 @@
 /** The ID string for a timetable global variable */
 export declare type TimetableGlobalId = string
 
+export const TABLE_NAME = "globals";
+
 /**
     The interface for a timetable global
 */
-export interface TimetableGlobal {
-    ttid: string
-    id: TimetableGlobalId
-    name: string
-    settings: { draft_options: {} }
-    customfields: []
-    reg_name: string
-    tt_datefrom: string
+export class TimetableGlobal {
+    ttid: string = ""
+    id: TimetableGlobalId = ""
+    name: string = ""
+    settings: { draft_options: {} } = {draft_options: {}}
+    customfields: [] = []
+    reg_name: string = ""
+    tt_datefrom: string = ""
 }

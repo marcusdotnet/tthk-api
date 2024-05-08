@@ -3,6 +3,8 @@ import { timetableService } from "../../serviceProvider";
 /** The ID string for a timetable week definition */
 export declare type TimetableWeekDefinitionId = string
 
+export const TABLE_NAME = "weeksdefs";
+
 /**
     The class for a timetable week definition
 */

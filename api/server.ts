@@ -32,7 +32,7 @@ const specs = swaggerJSDoc({
         },
         servers: [
             {
-                url: "http://localhost:" + process.env.API_PORT + "/api",
+                url: "http://localhost:" + process.env.API_PORT,
             },
         ],
     },

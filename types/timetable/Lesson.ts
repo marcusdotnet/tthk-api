@@ -8,6 +8,8 @@ import type { TimetableDayDefinitionId } from "./DayDefinition";
 import type { TimetableTermDefinitionId } from "./TermDefinition";
 import type { TimetableWeekDefinitionId } from "./WeekDefinition";
 
+export const TABLE_NAME = "lessons";
+
 /** The ID string for a timetable lesson */
 export declare type TimetableLessonId = string
 

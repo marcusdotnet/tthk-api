@@ -1,12 +1,4 @@
 import { lstatSync, readdirSync } from "fs";
-import { TimetableCard } from "../types/timetable/Card";
-import { TimetableClass, type TimetableClassId } from "../types/timetable/Class";
-import { TimetableLesson } from "../types/timetable/Lesson";
-import { TimetableSubject } from "../types/timetable/Subject";
-import { TimetableTeacher } from "../types/timetable/Teacher";
-import { TimetableDayDefinition } from "../types/timetable/DayDefinition";
-import { TimetableTermDefinition } from "../types/timetable/TermDefinition";
-import { TimetableWeekDefinition } from "../types/timetable/WeekDefinition";
 import type { ApiConfigDataJson } from "../types/timetable/internal/ApiConfigDataJson";
 import type { TimetableApiDataJson } from "../types/timetable/internal/ApiDataJson";
 import { TimetableDataStore } from "../types/timetable/internal/DataStore";
@@ -14,9 +6,7 @@ import type { TimetableServiceOptions } from "../types/timetable/internal/Servic
 import { readFile, writeFile, exists, readdir } from "fs/promises";
 import path from "path";
 
-
-
-const timetableTypePath = path.join(__dirname, "../types/timetable");
+const timetableTypePath: string = path.join(__dirname, "../types/timetable");
 
 /**
  * A mapper where the key is the key of a table in the timetable datastore, and the value is a class.
@@ -24,6 +14,7 @@ const timetableTypePath = path.join(__dirname, "../types/timetable");
  * This is to achieve ORM-like behaviour.
  */
 const tableClassMap: Record<string, Function> = {};
+
 
 for (const fileName of readdirSync(timetableTypePath)) {
     const modulePath = path.join(timetableTypePath, fileName); 
@@ -46,7 +37,10 @@ for (const fileName of readdirSync(timetableTypePath)) {
 }
 
 
-export declare type TimetableQueryTableName = "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
+/**
+ * Valid queryable tables in a timetable
+ */
+export declare type TimetableQueryTableName =  "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
     | "classrooms" | "classes" | "subjects" | "teachers" | "groups" | "divisions" | "students" | "lessons" | "studentsubjects" | "cards" | "classroomsupervisions";
 
 
@@ -55,10 +49,19 @@ export declare type TimetableQueryTableName = "globals" | "periods" | "breaks" |
  * and allows for querying of timetable tables
  */
 export class TimetableService {
-    options: TimetableServiceOptions | null = null;
+    private options: TimetableServiceOptions | null = null;
+
+    /**
+     * A dictionary of all timetable data stores
+     * where the key is a timetable id and the value is the timetable store
+     */
     timetableStores: Record<string, TimetableDataStore> = {};
 
 
+    /**
+     * Configure the timetable service
+     * options are consumed from the active .env file.
+     */
     configure(): void {
         this.options = {
             eduPageTimetableUrl: process.env.EDUPAGE_TIMETABLE_API_URL as string,
@@ -69,10 +72,11 @@ export class TimetableService {
 
 
     /**
-     * 
+     * Fetch the timetable data
+     * must be called at least once during the program lifecycle in order to query the timetable.
      * @param useLocal Whether or not to use the local timetable file. Defaults to false.
      */
-    async fetchData(useLocal: boolean = false): Promise<void> {
+    async fetchData(useLocal: boolean = Boolean(process.env?.DEV)): Promise<void> {
         const options = this.options as TimetableServiceOptions;
         this.timetableStores = {};
         var timetableConfigData: ApiConfigDataJson = {} as ApiConfigDataJson;
@@ -115,17 +119,25 @@ export class TimetableService {
             const dataStore: TimetableDataStore = new TimetableDataStore(timetableEntry);
             dataStore.dto = timetableEntry;
 
+            if (!timetableData) return;
+
             // copy everything from the timetable's data rows and
             // turn them into instances of custom classes if possible
-            for (const table of Object.values(timetableData!.r!.dbiAccessorRes!.tables)) {
-                const rows = table.data_rows as [{ id: string }];
-                const dataTable: any = {};
-                const tableClassImport = await import("../types/timetable/")
+            for (const apiTable of timetableData!.r!.dbiAccessorRes!.tables) {
+                if (!apiTable) continue;
 
-                const instantiateClassObj = instantiateTableClass[table.id] as unknown as any;
+                const rows = apiTable.data_rows as [{ id: string }];
+                const dataTable: any = {};
+                const instantiateClassObj = tableClassMap[apiTable.id] as unknown as Function;
+
+                if (!instantiateClassObj) {
+                    console.log("Failed to instantiate an instance for table '" + apiTable.id + "'");
+                    continue;
+                }
 
                 for (var row of rows) {
-                    const rowObj = instantiateClassObj();
+                    //@ts-ignore
+                    const rowObj = new(instantiateClassObj);
                     rowObj.ttid = timetableEntry.tt_num;
                     Object.assign(rowObj, row);
 
@@ -133,7 +145,7 @@ export class TimetableService {
                 }
 
                 //@ts-ignore
-                dataStore[table.id] = dataTable;
+                dataStore[apiTable.id] = dataTable;
             };
 
 
@@ -142,15 +154,15 @@ export class TimetableService {
     }
 
     /**
-     * 
+     * Query a table of a specific timetable.
      * @param timetableId The id of the timetable to look in
      * @param tableName The name of the table to look in
      * @param filter The filter options
      * @returns An array of elements from table {tableName} that matches the {filter} criteria
      */
-    query(timetableId: string | undefined, tableName: TimetableQueryTableName, filter: TimetableDataStore[TimetableQueryTableName]) {
+    query(timetableId: string | undefined, tableName: TimetableQueryTableName, filter: TimetableDataStore[TimetableQueryTableName]): any[] | undefined {
         const timetableStore = timetableId && Object.keys(this.timetableStores).includes(timetableId) && this.timetableStores[timetableId];
-        if (!timetableStore) return false;
+        if (!timetableStore) return;
 
         var filtered: any[] = [];
 
@@ -176,6 +188,13 @@ export class TimetableService {
 
 
         return filtered;
+    }
+
+    /**
+     * The ids of all existing timetables in the timetable stores
+     */
+    get timetableids(): string[] {
+        return Object.keys(this.timetableStores);
     }
 
     private static checkMeetsQueryFilter(src: any, filter: any): boolean {

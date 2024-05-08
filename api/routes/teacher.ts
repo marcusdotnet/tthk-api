@@ -1,3 +1,18 @@
+/**
+ * @swagger
+ * /timetable/:timetableId/teachers:
+ *  get:
+*      summary: Retrieve a list of teachers
+*      description: Retrieve a list of teachers
+*      responses:
+*          200:
+*              description: A list of teachers
+*              content:
+*                  application/json:
+*                      schema:
+*                          type: object
+ */
+
 import { Router } from "express";
 import type { TimetableClass } from "../../types/timetable/Class";
 import type { TimetableTeacher } from "../../types/timetable/Teacher";

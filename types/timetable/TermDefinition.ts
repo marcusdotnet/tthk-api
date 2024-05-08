@@ -3,6 +3,8 @@ import { timetableService } from "../../serviceProvider";
 /** The ID string for a timetable term definition */
 export declare type TimetableTermDefinitionId = string
 
+export const TABLE_NAME = "termsdefs";
+
 /**
     The class for a timetable term definition
 */

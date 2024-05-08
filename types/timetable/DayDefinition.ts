@@ -1,5 +1,7 @@
 import { timetableService } from "../../serviceProvider";
 
+export const TABLE_NAME = "daysdefs";
+
 /** The ID string for a timetable day definition */
 export declare type TimetableDayDefinitionId = string
 
@@ -7,6 +9,7 @@ export declare type TimetableDayDefinitionId = string
     The class for a timetable day definition
 */
 export class TimetableDayDefinition {
+    ttid: string = ""
     id: TimetableDayDefinitionId = ""
     vals: string[] = [];
 

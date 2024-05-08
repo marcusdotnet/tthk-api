@@ -2,6 +2,8 @@ import { timetableService } from "../../serviceProvider";
 import { ClassTimetable } from "./ClassTimetable";
 import type { TimetableClassroomId, TimetableClassroom } from "./Classroom";
 import type { TimetableTeacherId, TimetableTeacher } from "./Teacher";
+
+
 export const TABLE_NAME = "classes";
 
 /** The ID string for a timetable class */

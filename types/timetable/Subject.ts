@@ -1,3 +1,4 @@
+export const TABLE_NAME = "subjects";
 
 /** The ID string for a timetable subject */
 export declare type TimetableSubjectId = string

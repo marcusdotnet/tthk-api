@@ -4,6 +4,8 @@ import type { TimetableClass, TimetableClassId } from "./Class"
 /** The ID string for a timetable teacher */
 export declare type TimetableTeacherId = string
 
+export const TABLE_NAME = "teachers";
+
 /**
     The interface for a timetable teacher
 */
