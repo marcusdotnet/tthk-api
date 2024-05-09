@@ -1,9 +1,16 @@
 /**
  * @swagger
- * /timetable/:timetableId/teachers:
+ * /timetable/{timetableId}/teachers:
  *  get:
 *      summary: Retrieve a list of teachers
 *      description: Retrieve a list of teachers
+*      parameters:
+*       - in: path
+*         name: timetableId
+*         schema:
+*           type: string
+*         required: true
+*         description: The timetable id
 *      responses:
 *          200:
 *              description: A list of teachers

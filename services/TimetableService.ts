@@ -5,19 +5,23 @@ import { TimetableDataStore } from "../types/timetable/internal/DataStore";
 import type { TimetableServiceOptions } from "../types/timetable/internal/ServiceOptions";
 import { readFile, writeFile, exists, readdir } from "fs/promises";
 import path from "path";
+import type { BunFile } from "bun";
 
-const timetableTypePath: string = path.join(__dirname, "../types/timetable");
+
+const timetableDevFile: BunFile = Bun.file("./timetable.json");
+
 
 /**
  * A mapper where the key is the key of a table in the timetable datastore, and the value is a class.
  * All elements of the original api data within the table will be replaced with an instance of that class.
  * This is to achieve ORM-like behaviour.
- */
+*/
 const tableClassMap: Record<string, Function> = {};
 
 
+const timetableTypePath: string = path.join(__dirname, "../types/timetable");
 for (const fileName of readdirSync(timetableTypePath)) {
-    const modulePath = path.join(timetableTypePath, fileName); 
+    const modulePath = path.join(timetableTypePath, fileName);
     const fileStats = lstatSync(modulePath);
     if (fileStats.isDirectory()) continue;
 
@@ -38,9 +42,18 @@ for (const fileName of readdirSync(timetableTypePath)) {
 
 
 /**
+ * The structure for the timetable file used in development mode
+ */
+interface DevFileData {
+    config?: ApiConfigDataJson;
+    data: { [key: string]: TimetableApiDataJson };
+}
+
+
+/**
  * Valid queryable tables in a timetable
  */
-export declare type TimetableQueryTableName =  "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
+export declare type TimetableQueryTableName = "globals" | "periods" | "breaks" | "bells" | "daysdefs" | "weeksdefs" | "termsdefs" | "days" | "weeks" | "terms" | "buildings"
     | "classrooms" | "classes" | "subjects" | "teachers" | "groups" | "divisions" | "students" | "lessons" | "studentsubjects" | "cards" | "classroomsupervisions";
 
 
@@ -71,43 +84,39 @@ export class TimetableService {
     }
 
 
+
     /**
      * Fetch the timetable data
      * must be called at least once during the program lifecycle in order to query the timetable.
-     * @param useLocal Whether or not to use the local timetable file. Defaults to false.
      */
-    async fetchData(useLocal: boolean = Boolean(process.env?.DEV)): Promise<void> {
+    async fetchData(): Promise<void> {
+        const useLocalFile: boolean = Boolean(process.env?.DEV);
         const options = this.options as TimetableServiceOptions;
+        const localFileExists = useLocalFile && await timetableDevFile.exists();
+
+        var timetableConfigData: ApiConfigDataJson | undefined;
+        var devFileData: DevFileData = useLocalFile && (localFileExists && await timetableDevFile.json()) || { "data": {}, "config": {} };
+
+
+        if (useLocalFile && localFileExists) {
+            timetableConfigData = devFileData["config"];
+        }
+
         this.timetableStores = {};
-        var timetableConfigData: ApiConfigDataJson = {} as ApiConfigDataJson;
+        timetableConfigData ??= await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/ttviewer.js?__func=getTTViewerData`, {
+            method: "POST",
+            body: JSON.stringify({
+                "__args": [null, 2023],
+                "__gsh": "00000000"
+            })
+        })).json());
 
-        const localFilePath: string = process!.env!.DEV_TIMETABLE_FILE as string;
-        const localFileExists = useLocal && await exists(localFilePath);
+        if (useLocalFile && localFileExists)
+            devFileData["config"] = timetableConfigData;
 
-        if (!useLocal || !localFileExists) {
-            timetableConfigData = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/ttviewer.js?__func=getTTViewerData`, {
-                method: "POST",
-                body: JSON.stringify({
-                    "__args": [null, 2023],
-                    "__gsh": "00000000"
-                })
-            })).json());
-
-            if (useLocal) {
-                await writeFile(localFilePath, JSON.stringify(timetableConfigData));
-                await this.fetchData(true);
-
-                return;
-            }
-        }
-        else {
-            const jsonStr: string = await readFile(localFilePath) as unknown as string;
-
-            timetableConfigData = JSON.parse(jsonStr)
-        }
-
+        //@ts-ignore
         for (const timetableEntry of timetableConfigData.r.regular.timetables) {
-            const timetableData: TimetableApiDataJson = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/regulartt.js?__func=regularttGetData`, {
+            const timetableData: TimetableApiDataJson = (useLocalFile && localFileExists && devFileData["data"][timetableEntry.tt_num]) || await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/regulartt.js?__func=regularttGetData`, {
                 method: "POST",
                 body: JSON.stringify({
                     "__args": [null, timetableEntry.tt_num],
@@ -115,6 +124,8 @@ export class TimetableService {
                 })
             })).json());
 
+            if (useLocalFile)
+                devFileData["data"][timetableEntry.tt_num] = timetableData;
 
             const dataStore: TimetableDataStore = new TimetableDataStore(timetableEntry);
             dataStore.dto = timetableEntry;
@@ -137,7 +148,7 @@ export class TimetableService {
 
                 for (var row of rows) {
                     //@ts-ignore
-                    const rowObj = new(instantiateClassObj);
+                    const rowObj = new (instantiateClassObj);
                     rowObj.ttid = timetableEntry.tt_num;
                     Object.assign(rowObj, row);
 
@@ -148,9 +159,11 @@ export class TimetableService {
                 dataStore[apiTable.id] = dataTable;
             };
 
-
             this.timetableStores[timetableEntry.tt_num] = dataStore;
         }
+
+        if (useLocalFile)
+            timetableDevFile.writer().write(JSON.stringify(devFileData));
     }
 
     /**
@@ -199,14 +212,14 @@ export class TimetableService {
 
     private static checkMeetsQueryFilter(src: any, filter: any): boolean {
         if (typeof filter != "function" && (typeof src != typeof filter)) return false;
-    
+
         if (typeof filter == "function") {
             return filter(src);
         }
         else if (typeof src == "string") {
             return src.toLowerCase().includes(filter.toLowerCase());
         }
-    
+
         return src == filter;
     }
 }
