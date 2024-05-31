@@ -1,0 +1,260 @@
+openapi: 3.0.2
+info:
+  title: TTHK Timetable API
+  version: '0.1'
+servers:
+  - url: http://localhost:5637
+components:
+  schemas:
+    Timetable:
+      type: object
+      properties:
+        tt_num:
+          type: string
+        year:
+          type: number
+        text:
+          type: string
+        datefrom:
+          type: string
+        hidden:
+          type: boolean
+    TimetableSubject:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        short_name:
+          type: string
+        color:
+          type: string
+    TimetableCard:
+      type: object
+      properties:
+        id:
+          type: string
+        subject:
+          type: string
+        teachers:
+          type: array
+          items:
+            type: string
+        rooms:
+          type: array
+          items:
+            type: string
+        period_span:
+          type: array
+          items:
+            type: integer
+        days:
+          type: array
+          items:
+            type: object
+            properties:
+              ttid:
+                type: string
+              id:
+                type: string
+              name:
+                type: string
+              short:
+                type: string
+    TimetableClass:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        teachers:
+          type: array
+          items:
+            type: string
+        classrooms:
+          type: array
+          items: {}
+    TimetableTeacher:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        taught_classes:
+          type: array
+          items: {}
+
+paths:
+  /timetable:
+    get:
+      description: Get a list of timetables
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Timetable"
+  /timetable/{timetableId}/subjects:
+    get:
+      description: Get a list of subjects for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve subjects for
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimetableSubject"
+        '404':
+          description: Not Found
+  /timetable/{timetableId}/subjects/{subjectId}:
+    get:
+      description: Get a specific subject by ID for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve the subject for
+        - in: path
+          name: subjectId
+          schema:
+            type: string
+          required: true
+          description: ID of the subject to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableSubject"
+        '404':
+          description: Not Found
+  /timetable/{timetableId}/lessons:
+    get:
+      description: Get a list of lessons for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve lessons for
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimetableCard"
+        '404':
+          description: Not Found
+  /timetable/{timetableId}/lessons/{lessonId}:
+    get:
+      description: Get a specific lesson by ID for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve the lesson for
+        - in: path
+          name: lessonId
+          schema:
+            type: string
+          required: true
+          description: ID of the lesson to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableCard"
+        '404':
+          description: Not Found
+  /timetable/{timetableId}/classes:
+    get:
+      description: Get a list of classes for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve classes for
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableClass"
+        '404':
+          description: Not Found
+  /timetable/{timetableId}/teachers:
+    get:
+      description: Get a list of teachers for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve teachers for
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableTeacher"
+        '404':
+          description: Not Found
+  /timetable/{timetableId}/teachers/{teacherId}:
+    get:
+      description: Get a specific teacher by ID for a specific timetable
+      parameters:
+        - in: path
+          name: timetableId
+          schema:
+            type: string
+          required: true
+          description: ID of the timetable to retrieve the subject for
+        - in: path
+          name: teacherId
+          schema:
+            type: string
+          required: true
+          description: ID of the teacher to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableTeacher"
+        '404':
+          description: Not Found    

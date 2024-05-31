@@ -7,11 +7,23 @@ import TimetableChangesRouter from "./routes/ttChanges";
 import SubjectsRouter from "./routes/subject";
 import LessonsRouter from "./routes/lesson";
 import swaggerUi from "swagger-ui-express";
-import { specs } from "./util/swagger";
+
+import YAML from "yamljs";
+import path from "path";
+
+const docsPath = path.join(__dirname, "/docs");
+const swaggerDocument = YAML.load(`${docsPath}/swagger.yaml`);
+
+
 
 
 const app: Express = express();
 app.use(express.json());
+app.use("*.css", (_, res, next) => {
+    res.setHeader("Content-Type", "text/css");
+
+    next();
+});
 
 app.use("/timetable_changes", TimetableChangesRouter);
 app.use("/timetable", TimetableRouter);
@@ -22,7 +34,11 @@ TimetableRouter.use("/:timetableId/subjects", TimetableMiddleware, SubjectsRoute
 TimetableRouter.use("/:timetableId/lessons", TimetableMiddleware, LessonsRouter);
 
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+    customCssUrl: `/docs.css`
+}));
 
 
 export default app;

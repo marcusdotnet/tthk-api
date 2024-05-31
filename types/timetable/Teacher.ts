@@ -42,14 +42,14 @@ export class TimetableTeacher {
         }
     }
 
-    get prettyDto() {
-        const prettyDtoObj: any = {
-            id: this.id,
-            name: this.short,
-            color: this.color,
-        };
+    // get prettyDto() {
+    //     const prettyDtoObj: any = {
+    //         id: this.id,
+    //         name: this.short,
+    //         color: this.color,
+    //     };
 
-        prettyDtoObj.taught_classes = this.taught_classes.map(classObj => classObj?.name || classObj?.short);
-        return prettyDtoObj;
-    }
+    //     prettyDtoObj.taught_classes = this.taught_classes.map(classObj => classObj?.name || classObj?.short);
+    //     return prettyDtoObj;
+    // }
 }

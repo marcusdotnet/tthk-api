@@ -1,6 +1,4 @@
 import { Router } from "express";
-import type { TimetableClass } from "../../types/timetable/Class";
-import type { TimetableTeacher } from "../../types/timetable/Teacher";
 import type { TimetableSubject } from "../../types/timetable/Subject";
 
 const SubjectsRouter = Router();

@@ -77,54 +77,54 @@ export class TimetableCard {
         }
     }
 
-    get prettyDto() {
-        const lesson = this.lesson;
-        const subject = lesson.subject;
+    // get prettyDto() {
+    //     const lesson = this.lesson;
+    //     const subject = lesson.subject;
 
-        const periodSpan = this.periodSpan;
-        const [startPeriod, endPeriod] = this.periodSpan;
+    //     const periodSpan = this.periodSpan;
+    //     const [startPeriod, endPeriod] = this.periodSpan;
 
-        const prettyDtoObj: any = {
-            id: this.id,
-            subject: (subject?.name || subject?.short || undefined),
-            time_span: this.timeSpan.join("-"),
-            period_span: startPeriod != endPeriod ? periodSpan.join("-") : startPeriod.toString(),
-        }
+    //     const prettyDtoObj: any = {
+    //         id: this.id,
+    //         subject: (subject?.name || subject?.short || undefined),
+    //         time_span: this.timeSpan.join("-"),
+    //         period_span: startPeriod != endPeriod ? periodSpan.join("-") : startPeriod.toString(),
+    //     }
 
 
-        const prettyDays = this.assignedDays.map(ad => ad?.name || ad?.short);
-        if (prettyDays.length > 1) {
-            prettyDtoObj.days = prettyDays;
-        }
-        else {
-            prettyDtoObj.day = prettyDays[0];
-        }
+    //     const prettyDays = this.assignedDays.map(ad => ad?.name || ad?.short);
+    //     if (prettyDays.length > 1) {
+    //         prettyDtoObj.days = prettyDays;
+    //     }
+    //     else {
+    //         prettyDtoObj.day = prettyDays[0];
+    //     }
 
-        const prettyClassrooms = this.classrooms.map(room => room?.short || room?.name);
-        if (this.classroomids.length > 1) {
-            prettyDtoObj.rooms = prettyClassrooms;
-        }
-        else if (this.classroomids.length == 1) {
-            prettyDtoObj.room = prettyClassrooms[0]
-        }
+    //     const prettyClassrooms = this.classrooms.map(room => room?.short || room?.name);
+    //     if (this.classroomids.length > 1) {
+    //         prettyDtoObj.rooms = prettyClassrooms;
+    //     }
+    //     else if (this.classroomids.length == 1) {
+    //         prettyDtoObj.room = prettyClassrooms[0]
+    //     }
 
-        const prettyTeachers = lesson.teachers.map(teacher => teacher?.short || "no_name");
+    //     const prettyTeachers = lesson.teachers.map(teacher => teacher?.short || "no_name");
 
-        if (prettyTeachers.length > 1) {
-            prettyDtoObj.teachers = prettyTeachers;
-        }
-        else if (prettyTeachers.length == 1) {
-            prettyDtoObj.teacher = prettyTeachers[0];
-        }
+    //     if (prettyTeachers.length > 1) {
+    //         prettyDtoObj.teachers = prettyTeachers;
+    //     }
+    //     else if (prettyTeachers.length == 1) {
+    //         prettyDtoObj.teacher = prettyTeachers[0];
+    //     }
 
-        const prettyClasses = lesson.classes.map(cl => cl?.name || cl?.short);
-        if (lesson.classids.length > 1) {
-            prettyDtoObj.classes = prettyClasses
-        }
-        else if (lesson.classids.length == 1) {
-            prettyDtoObj.class = prettyClasses[0];
-        }
+    //     const prettyClasses = lesson.classes.map(cl => cl?.name || cl?.short);
+    //     if (lesson.classids.length > 1) {
+    //         prettyDtoObj.classes = prettyClasses
+    //     }
+    //     else if (lesson.classids.length == 1) {
+    //         prettyDtoObj.class = prettyClasses[0];
+    //     }
 
-        return prettyDtoObj;
-    }
+    //     return prettyDtoObj;
+    // }
 }
