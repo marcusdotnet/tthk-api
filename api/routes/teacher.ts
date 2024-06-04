@@ -1,25 +1,58 @@
 import { Router } from "express";
-import type { TimetableTeacher } from "../../types/timetable/Teacher";
 
-const TeacherRouter = Router();
+const TeachersRouter = Router();
 
-TeacherRouter.get("/", (req, res) => {
-    const teachers: TimetableTeacher[] | undefined = req.timetableQuery("teachers", req.query) as TimetableTeacher[];
+TeachersRouter.get("/", (req, res) => {
+    /*  #swagger.tags = ["Timetable"]
+        #swagger.parameters['name'] = {
+            in: 'query',
+            description: 'The name of the teaacher to look for',
+            required: false,
+            type: 'string'
+        }
+        #swagger.parameters['color'] = {
+            in: 'query',
+            description: 'The color of the teacher to look for',
+            required: false,
+            type: 'string'
+        }        
+        #swagger.parameters['taught_classes'] = {
+            in: 'query',
+            description: 'An array of classes the teacher should be teaching',
+            required: false,
+            type: 'array',
+            schema: 'string'
+        }
+    */
+    const teachers = req.timetableQuery("teachers", req.query);
     if (!teachers) return res.sendStatus(404);
 
     res.status(200);
     return res.json(teachers.map(teacher => teacher.dto));
 });
 
-TeacherRouter.get("/:teacherId", (req, res) => {
-    const teacher: TimetableTeacher | undefined = (req.timetableQuery("teachers", {
+TeachersRouter.get("/:teacherId", (req, res) => {
+    // #swagger.tags = ["Timetable"]
+    const teacherObj = req.timetableQueryOne("teachers", {
         id: req.params.teacherId
-    }) as TimetableTeacher[])[0] as TimetableTeacher;
+    });
 
-    if (!teacher) return res.sendStatus(404);
+    if (!teacherObj) return res.sendStatus(404);
 
     res.status(200);
-    return res.send(teacher.dto);
+    return res.send(teacherObj.dto);
 });
 
-export default TeacherRouter;
+TeachersRouter.get("/:teacherId/taught_classes", (req, res) => {
+    // #swagger.tags = ["Timetable"]
+    const teacherObj = req.timetableQueryOne("teachers", {
+        id: req.params.teacherId
+    });
+
+    if (!teacherObj) return res.sendStatus(404);
+
+    res.status(200);
+    return res.send(teacherObj.taught_classes);
+});
+
+export default TeachersRouter;

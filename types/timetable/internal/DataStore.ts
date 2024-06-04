@@ -56,5 +56,8 @@ export class TimetableDataStore {
     cards: Record<TimetableCardId, TimetableCard> = {};
     classroomsupervisions: Record<TimetableClassroomSupervisionId, TimetableClassroomSupervision> = {};
 
-    dto: any = {};
+    dto: ApiTimetable = {} as ApiTimetable
 }
+
+export type DataStoreType<TableName extends keyof TimetableDataStore> = 
+  TimetableDataStore[TableName] extends Record<string, infer V> ? V : never;

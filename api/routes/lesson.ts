@@ -1,29 +1,112 @@
 import { Router } from "express";
-import type { TimetableCard } from "../../types/timetable/Card";
+
 
 const LessonsRouter = Router();
 
 LessonsRouter.get("/", (req, res) => {
-    const cards: TimetableCard[] | undefined = req.timetableQuery("cards", req.query) as TimetableCard[];
-
-    if (!cards) return res.status(404).send({ message: "No lessons found that match your filter!" });
+    /*  #swagger.tags = ["Timetable"]
+        #swagger.parameters['subject'] = {
+            in: 'query',
+            description: 'The id of the subject that the lesson should be associated with',
+            required: false,
+            type: 'string'
+        }
+        #swagger.parameters['teachers'] = {
+            in: 'query',
+            description: 'An array of teacher ids that the lesson must have assigned to them',
+            required: false,
+            type: 'array'
+        }
+        #swagger.parameters['rooms'] = {
+            in: 'query',
+            description: 'An array of classroom ids that the lesson must have assigned to them',
+            required: false,
+            type: 'array'
+        }
+        #swagger.parameters['period_start'] = {
+            in: 'query',
+            description: 'Which period the lesson has to start at',
+            required: false,
+            type: 'integer'
+        }        
+        #swagger.parameters['period_end'] = {
+            in: 'query',
+            description: 'Which period the lesson has to end at',
+            required: false,
+            type: 'integer'
+        }
+        #swagger.parameters['days'] = {
+            in: 'query',
+            description: 'An array of the names of days that the lesson is on',
+            required: false,
+            type: 'array'
+        }
+    */
+    const lessons = req.timetableQuery("cards", req.query);
+    if (!lessons) return res.sendStatus(404);
 
     res.status(200);
-    return res.json(cards.map(card => card.dto));
+    return res.json(lessons.map(lesson => lesson.dto));
 });
 
 LessonsRouter.get("/:lessonId", (req, res) => {
-    const card: TimetableCard | undefined = (req.timetableQuery("cards", {
+    // #swagger.tags = ["Timetable"]
+    const lessonObj = req.timetableQueryOne("cards", {
         id: req.params.lessonId
-    }) as TimetableCard[])[0] as TimetableCard;
-    if (!card) return res.sendStatus(404);
+    });
 
-    const isPretty = req.query && typeof req.query?.pretty == "string";
-
-
+    if (!lessonObj) return res.sendStatus(404);
 
     res.status(200);
-    return res.send(card.dto);
+    return res.send(lessonObj.dto);
+});
+
+LessonsRouter.get("/:lessonId/teachers", (req, res) => {
+    // #swagger.tags = ["Timetable"]
+    const lessonObj = req.timetableQueryOne("cards", {
+        id: req.params.lessonId
+    });
+
+    if (!lessonObj) return res.sendStatus(404);
+
+    res.status(200);
+    return res.send(lessonObj.dto.teachers);
+});
+
+LessonsRouter.get("/:lessonId/subject", (req, res) => {
+    // #swagger.tags = ["Timetable"]
+    const lessonObj = req.timetableQueryOne("cards", {
+        id: req.params.lessonId
+    });
+
+    if (!lessonObj) return res.sendStatus(404);
+
+    res.status(200);
+    return res.send(lessonObj.subject?.dto);
+});
+
+LessonsRouter.get("/:lessonId/rooms", (req, res) => {
+    // #swagger.tags = ["Timetable"]
+    const lessonObj = req.timetableQueryOne("cards", {
+        id: req.params.lessonId
+    });
+
+    if (!lessonObj) return res.sendStatus(404);
+
+    res.status(200);
+    return res.send(lessonObj.dto.rooms);
+});
+
+LessonsRouter.get("/:lessonId/period_span", (req, res) => {
+    // #swagger.tags = ["Timetable"]
+    const lessonObj = req.timetableQueryOne("cards", {
+        id: req.params.lessonId
+    });
+
+    if (!lessonObj) return res.sendStatus(404);
+
+    res.status(200);
+    return res.send(lessonObj.periodSpan);
 });
 
 export default LessonsRouter;

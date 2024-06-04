@@ -6,9 +6,9 @@ timetableService.configure();
 
 
 (async () => {
-    // await timetableChangesService.fetchData();
+    await timetableChangesService.fetchData();
     await timetableService.fetchData();
 
-    const port: Number = Number(process.env.API_PORT as unknown as string);
+    const port: number = Number(process.env.API_PORT as unknown as string);
     app.listen(port, () => console.log(`Listening on port ${port}`));
 })();

@@ -1,4 +1,5 @@
 import type { TimetableBuildingId } from "./Building"
+import { DataTableObject } from "./internal/DataTableObject";
 
 export const TABLE_NAME = "classrooms";
 
@@ -8,8 +9,7 @@ export declare type TimetableClassroomId = string
 /**
     The interface for a timetable classroom
 */
-export class TimetableClassroom {
-    ttid: string = ""
+export class TimetableClassroom extends DataTableObject {
     id: TimetableClassroomId = ""
     name: string = ""
     short: string = ""
@@ -20,6 +20,12 @@ export class TimetableClassroom {
      * The dto for this object, used in the API.
     */
     get dto() {
-        return this;
+        return {
+            id: this.id,
+            name: this.name,
+            short_name: this.short,
+            buildingid: this.buildingid,
+            color: this.color
+        }
     }
 }

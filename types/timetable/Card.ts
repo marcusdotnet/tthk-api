@@ -2,7 +2,8 @@ import { timetableService } from "../../serviceProvider"
 import type { TimetableClassroom, TimetableClassroomId } from "./Classroom"
 import type { TimetableDay } from "./Day"
 import type { TimetableLesson, TimetableLessonId } from "./Lesson"
-import type { TimetableTeacher } from "./Teacher"
+import { DataTableObject } from "./internal/DataTableObject";
+
 export const TABLE_NAME = "cards";
 
 /** The ID string for a timetable card */
@@ -11,27 +12,12 @@ export declare type TimetableCardId = string
 /**
     The interface for a timetable card
 */
-export class TimetableCard {
-    ttid: string = ""
+export class TimetableCard extends DataTableObject {
     id: TimetableCardId = ""
     locked: boolean = false
     period: number = 0
     days: string = ""
     weeks: string = ""
-
-    get assignedDays(): TimetableDay[] {
-        const assigneddays = [];
-
-        const days = this.days;
-        for (var i = 0; i < days.length; i++) {
-            const digit = days[i];
-            if (digit == "0") continue;
-
-            assigneddays.push(timetableService.timetableStores[this.ttid].days[i]);
-        }
-
-        return assigneddays;
-    }
 
     classroomids: TimetableClassroomId[] = []
     get classrooms(): TimetableClassroom[] {
@@ -66,65 +52,36 @@ export class TimetableCard {
         return [startTime, endTime];
     }
 
+    get subject() {
+        return timetableService.queryOne(this.ttid, "subjects", { id: this.lesson.subjectid });
+    }
+    
+    assignedDays: TimetableDay[] = [];
+    override onDataReady(): void {
+        const assigneddays = [];
+
+        const days = this.days;
+        for (var i = 0; i < days.length; i++) {
+            const digit = days[i];
+            if (digit == "0") continue;
+
+            assigneddays.push(timetableService.timetableStores[this.ttid].days[i]);
+        }
+
+        this.assignedDays = assigneddays;
+    }
+
     get dto() {
+        const [start, end] = this.periodSpan;
+
         return {
             id: this.id,
             subject: this.lesson.subjectid,
             teachers: this.lesson.teacherids,
             rooms: this.classroomids,
-            period_span: this.periodSpan,
-            days: this.assignedDays
+            period_start: start,
+            period_end: end || start,
+            days: this.assignedDays.map(d => d.englishName.toLowerCase())
         }
     }
-
-    // get prettyDto() {
-    //     const lesson = this.lesson;
-    //     const subject = lesson.subject;
-
-    //     const periodSpan = this.periodSpan;
-    //     const [startPeriod, endPeriod] = this.periodSpan;
-
-    //     const prettyDtoObj: any = {
-    //         id: this.id,
-    //         subject: (subject?.name || subject?.short || undefined),
-    //         time_span: this.timeSpan.join("-"),
-    //         period_span: startPeriod != endPeriod ? periodSpan.join("-") : startPeriod.toString(),
-    //     }
-
-
-    //     const prettyDays = this.assignedDays.map(ad => ad?.name || ad?.short);
-    //     if (prettyDays.length > 1) {
-    //         prettyDtoObj.days = prettyDays;
-    //     }
-    //     else {
-    //         prettyDtoObj.day = prettyDays[0];
-    //     }
-
-    //     const prettyClassrooms = this.classrooms.map(room => room?.short || room?.name);
-    //     if (this.classroomids.length > 1) {
-    //         prettyDtoObj.rooms = prettyClassrooms;
-    //     }
-    //     else if (this.classroomids.length == 1) {
-    //         prettyDtoObj.room = prettyClassrooms[0]
-    //     }
-
-    //     const prettyTeachers = lesson.teachers.map(teacher => teacher?.short || "no_name");
-
-    //     if (prettyTeachers.length > 1) {
-    //         prettyDtoObj.teachers = prettyTeachers;
-    //     }
-    //     else if (prettyTeachers.length == 1) {
-    //         prettyDtoObj.teacher = prettyTeachers[0];
-    //     }
-
-    //     const prettyClasses = lesson.classes.map(cl => cl?.name || cl?.short);
-    //     if (lesson.classids.length > 1) {
-    //         prettyDtoObj.classes = prettyClasses
-    //     }
-    //     else if (lesson.classids.length == 1) {
-    //         prettyDtoObj.class = prettyClasses[0];
-    //     }
-
-    //     return prettyDtoObj;
-    // }
 }

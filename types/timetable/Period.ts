@@ -1,3 +1,5 @@
+import { DataTableObject } from "./internal/DataTableObject";
+
 /** The ID string for a timetable period */
 export declare type TimetablePeriodId = string
 
@@ -9,8 +11,7 @@ export const TABLE_NAME = "periods";
 /**
     The interface for a timetable period
 */
-export class TimetablePeriod {
-    ttid: string = ""
+export class TimetablePeriod extends DataTableObject {
     id: TimetablePeriodId = ""
     period: TimetablePeriodStr = ""
     name: string = ""

@@ -1,3 +1,5 @@
+import { DataTableObject } from "./internal/DataTableObject";
+
 export const TABLE_NAME = "subjects";
 
 /** The ID string for a timetable subject */
@@ -6,8 +8,7 @@ export declare type TimetableSubjectId = string
 /**
     The interface for a timetable subject
 */
-export class TimetableSubject {
-    ttid: string = ""
+export class TimetableSubject extends DataTableObject {
     id: TimetableSubjectId = ""
     name: string = ""
     short: string = ""

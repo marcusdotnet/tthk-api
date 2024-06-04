@@ -5,13 +5,12 @@ const TimetableChangesRouter = Router();
 
 
 TimetableChangesRouter.get("/", (req, res) => {
-    res.send(timetableChangesService.changes.map(change => ({
-        day: change.dayLetter,
-        date: change.date,
-        period: change.period,
-        info: change.info,
-        teacher: change.teacher
-    })));
-})
+    // #swagger.tags = ["Timetable changes"]
+    res.send(timetableChangesService.changes.map(change => {
+        // console.log(change.timetableId);
+        console.log(change.date);
+        return change.dto;
+    }));
+});
 
 export default TimetableChangesRouter;

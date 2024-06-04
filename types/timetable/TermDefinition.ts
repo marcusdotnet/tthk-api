@@ -1,4 +1,5 @@
 import { timetableService } from "../../serviceProvider";
+import { DataTableObject } from "./internal/DataTableObject";
 
 /** The ID string for a timetable term definition */
 export declare type TimetableTermDefinitionId = string
@@ -8,7 +9,7 @@ export const TABLE_NAME = "termsdefs";
 /**
     The class for a timetable term definition
 */
-export class TimetableTermDefinition {
+export class TimetableTermDefinition extends DataTableObject {
     id: TimetableTermDefinitionId = ""
     vals: string[] = []
 

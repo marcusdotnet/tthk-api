@@ -1,5 +1,5 @@
 import parse from "node-html-parser";
-import type { TimetableChangeEntry } from "../types/timetableChanges/ChangeEntry";
+import { TimetableChangeEntry } from "../types/timetableChanges/ChangeEntry";
 import type { TimetableChangesServiceOptions } from "../types/timetableChanges/internal/ServiceOptions";
 
 
@@ -10,8 +10,7 @@ export class TimetableChangesService {
 
     configure() {
         this.options = {
-            changesUrl: process.env.TTHK_CHANGES_URL as string,
-            changesSequence: process.env.TTHK_CHANGES_ORDER!.trim().split('"').filter(s => s != ",") as string[]
+            changesUrl: process.env.TTHK_CHANGES_URL as string
         }
     }
 
@@ -22,7 +21,6 @@ export class TimetableChangesService {
         const response = await fetch(this.options.changesUrl);
         const body = await response.text();
         const root = parse(body);
-        const changesSequence = this.options.changesSequence;
 
         for (const tableBody of root.querySelectorAll("table tbody")) {
             const firstRow = tableBody.firstChild;
@@ -31,22 +29,18 @@ export class TimetableChangesService {
             var rowIndex = -1;
             for (const tr of tableBody.childNodes) {
                 rowIndex++;
-                if (rowIndex == 0) continue; // skip the first row (it's the head of the table atm)
+                if (rowIndex == 0) continue; // skip the first row (it's the head of the table)
 
                 const rowColumns = tr.childNodes;
-                if (rowColumns.length < changesSequence.length) continue;
+                if (rowColumns.length < 6) continue;
 
-                const changeEntry: TimetableChangeEntry = {} as TimetableChangeEntry;
-
-                var changeInfoIndex = 0;
-                for (const td of rowColumns) {
-                    const changeKey = changesSequence[changeInfoIndex];
-
-                    //@ts-ignore
-                    changeEntry[changeKey] = td.innerText.trim();
-
-                    changeInfoIndex++;
-                }
+                const changeEntry = new TimetableChangeEntry();
+                changeEntry.dayLetter = rowColumns[0].innerText.trim();
+                changeEntry._date = rowColumns[1].innerText.trim();
+                changeEntry.class = rowColumns[2].innerText.trim();
+                changeEntry.period = rowColumns[3].innerText.trim();
+                changeEntry.teacher = rowColumns[4].innerText.trim();
+                changeEntry.info = rowColumns[5].innerText.trim();
 
                 this.changes.push(changeEntry);
             }

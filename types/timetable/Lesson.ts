@@ -7,6 +7,7 @@ import type { TimetableTeacher, TimetableTeacherId } from "./Teacher";
 import type { TimetableDayDefinitionId } from "./DayDefinition";
 import type { TimetableTermDefinitionId } from "./TermDefinition";
 import type { TimetableWeekDefinitionId } from "./WeekDefinition";
+import { DataTableObject } from "./internal/DataTableObject";
 
 export const TABLE_NAME = "lessons";
 
@@ -16,8 +17,7 @@ export declare type TimetableLessonId = string
 /**
     The class for a timetable lesson
 */
-export class TimetableLesson {
-    ttid: string = ""
+export class TimetableLesson extends DataTableObject {
     id: TimetableLessonId = "";
     count: number = 0;
     durationperiods: number = 0;

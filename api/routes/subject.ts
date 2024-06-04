@@ -4,24 +4,44 @@ import type { TimetableSubject } from "../../types/timetable/Subject";
 const SubjectsRouter = Router();
 
 SubjectsRouter.get("/", (req, res) => {
-    const data: TimetableSubject[] | undefined = req.timetableQuery("subjects", req.query) as TimetableSubject[];
-
-    if (!data) return res.sendStatus(404);
+    /*  #swagger.tags = ["Timetable"]
+        #swagger.parameters['name'] = {
+            in: 'query',
+            description: 'The name of the subject to look for',
+            required: false,
+            type: 'string'
+        }
+        #swagger.parameters['short_name'] = {
+            in: 'query',
+            description: 'The short name of the subject to look for',
+            required: false,
+            type: 'string'
+        }
+        #swagger.parameters['color'] = {
+            in: 'query',
+            description: 'The color of the subject to look for',
+            required: false,
+            type: 'string'
+        }
+    */
+    const subjects = req.timetableQuery("subjects", req.query);
+    if (!subjects) return res.sendStatus(404);
 
     res.status(200);
-    return res.json(data.map(subject => subject.dto));
+    return res.json(subjects.map(subject => subject.dto));
 });
 
 SubjectsRouter.get("/:subjectId", (req, res) => {
-    const data: TimetableSubject | undefined = (req.timetableQuery("subjects", {
+    // #swagger.tags = ["Timetable"]
+    const subjectObj: TimetableSubject | undefined = req.timetableQueryOne("subjects", {
         id: req.params.subjectId
-    }) as TimetableSubject[])[0] as TimetableSubject;
+    });
 
-    if (!data) return res.sendStatus(404);
+    if (!subjectObj) return res.sendStatus(404);
 
 
     res.status(200);
-    return res.send(data.dto);
+    return res.send(subjectObj.dto);
 });
 
 export default SubjectsRouter;

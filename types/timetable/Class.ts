@@ -1,7 +1,7 @@
 import { timetableService } from "../../serviceProvider";
-import { ClassTimetable } from "./ClassTimetable";
 import type { TimetableClassroomId, TimetableClassroom } from "./Classroom";
 import type { TimetableTeacherId, TimetableTeacher } from "./Teacher";
+import { DataTableObject } from "./internal/DataTableObject";
 
 
 export const TABLE_NAME = "classes";
@@ -12,8 +12,7 @@ export declare type TimetableClassId = string
 /**
     The class for a timetable class
 */
-export class TimetableClass {
-    ttid: string = ""
+export class TimetableClass extends DataTableObject {
     id: TimetableClassId = "";
     name: string = "";
     short: string = "";
@@ -44,27 +43,6 @@ export class TimetableClass {
     teacherids: TimetableTeacherId[] = [];
     get teacher(): TimetableTeacher | null {
         return timetableService.timetableStores[this.ttid].teachers[this.teacherid] || null;
-    }
-
-    get teachers(): TimetableTeacher[] {
-        const teachers: TimetableTeacher[] = [];
-
-        for (const teacherId of this.teacherids) {
-            const teacher = timetableService.timetableStores[this.ttid].teachers[teacherId];
-
-            teachers.push(teacher);
-        }
-
-        return teachers;
-    }
-
-    #timetable: ClassTimetable | null = null;
-    get timetable() {
-        if (!this.#timetable) {
-            this.#timetable = new ClassTimetable(this.id);
-        }
-
-        return this.#timetable;
     }
 
     /**

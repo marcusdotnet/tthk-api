@@ -1,5 +1,7 @@
 import { timetableService } from "../../serviceProvider"
 import type { TimetableClass, TimetableClassId } from "./Class"
+import { TimetableDataStore } from "./internal/DataStore";
+import { DataTableObject } from "./internal/DataTableObject";
 
 /** The ID string for a timetable teacher */
 export declare type TimetableTeacherId = string
@@ -9,8 +11,7 @@ export const TABLE_NAME = "teachers";
 /**
     The interface for a timetable teacher
 */
-export class TimetableTeacher {
-    ttid: string = ""
+export class TimetableTeacher extends DataTableObject {
     id: TimetableTeacherId = ""
     short: string = ""
     bell: string = ""
@@ -23,12 +24,11 @@ export class TimetableTeacher {
     }] | null = null
     edupageid: string = ""
     classids: TimetableClassId[] = []
+
     get taught_classes() {
         const taughtClasses = timetableService.query(this.ttid, "classes", {
-            id: (cl: TimetableClass) => {
-                return cl.teacherids.includes(this.id); // weird bug here, fix later, painnnnnn, the painnnnnn
-            }
-        }) as TimetableClass[];
+            teacherids: [this.id]
+        });
 
         return taughtClasses;
     }
@@ -38,18 +38,7 @@ export class TimetableTeacher {
             id: this.id,
             name: this.short,
             color: this.color,
-            taught_classes: this.classids
+            taught_classes: this.taught_classes.map(classObj => classObj.id)
         }
     }
-
-    // get prettyDto() {
-    //     const prettyDtoObj: any = {
-    //         id: this.id,
-    //         name: this.short,
-    //         color: this.color,
-    //     };
-
-    //     prettyDtoObj.taught_classes = this.taught_classes.map(classObj => classObj?.name || classObj?.short);
-    //     return prettyDtoObj;
-    // }
 }
