@@ -1,5 +1,5 @@
-import { TimetableChangesService } from "./services/TimetableChangesService";
-import { TimetableService } from "./services/TimetableService";
+import { TimetableChangesService } from "./src/services/TimetableChangesService";
+import { TimetableService } from "./src/services/TimetableService";
 
 
 

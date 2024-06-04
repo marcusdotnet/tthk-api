@@ -4,12 +4,14 @@
   "type": "module",
   "scripts": {
     "start": "bun main.ts",
-    "dev": "bun --watch --env-file=.env.development main.ts",
-    "swagger": "bun --watch ./api/docs/swagger.ts",
-    "redoc": "npx redocly build-docs ./api/docs/swagger-output.json"
+    "dev": "bun --watch --env-file=.env.development ./src/main.ts",
+    "swagger": "bun --watch ./src/api/docs/swagger.ts",
+    "redoc": "npx redocly build-docs ./src/api/docs/swagger-output.json",
+    "redoclint": "npx redocly lint ./src/api/docs/swagger-output.json"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "ttypescript": "^1.5.15"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -24,7 +26,6 @@
     "node-html-parser": "^6.1.13",
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0",
-    "yamljs": "^0.3.0"
+    "swagger-ui-express": "^5.0.0"
   }
 }
