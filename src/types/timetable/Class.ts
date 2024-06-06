@@ -48,7 +48,7 @@ export class TimetableClass extends DataTableObject {
     /**
      * The dto for this object, used in the API.
     */
-    public get dto() {
+    get dto() {
         return {
             id: this.id,
             name: this.name,

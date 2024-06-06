@@ -22,12 +22,12 @@ export const TimetableClassroomDefinition = {
 }
 
 export const TimetableLessonDefinition = {
-    id: "",
-    subject: "",
-    teachers: [""],
-    rooms: [""],
-    period_start: 0,
-    period_end: 0,
+    id: "*1",
+    subject: "*1223",
+    classes: ["-467"],
+    teachers: ["*140"],
+    rooms: ["*29"],
+    periods: [7, 7],
     days: [""]
 }
 
@@ -45,4 +45,12 @@ export const TimetableChangeEntryDefinition = {
     period_span: [0, 0],
     teacher: "",
     info: ""
+}
+
+export const TimetableDataStoreDefinition = {
+    "tt_num": "",
+    "year": 0,
+    "text": "",
+    "datefrom": "yyyy-mm-dd",
+    "hidden": false
 }

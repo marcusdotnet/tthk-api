@@ -1,0 +1,19 @@
+
+apis:
+  core@v2:
+    root: ./openapi/openapi.yaml
+    rules:
+      no-ambiguous-paths: error
+  external@v1:
+    root: ./openapi/external.yaml
+    labels:
+      - external
+
+theme:
+  openapi:
+    schemaExpansionLevel: 2
+    hideLogo: false  # This ensures the logo is shown for core API docs
+    generateCodeSamples:
+      languages:
+        - lang: curl
+        - lang: JavaScript

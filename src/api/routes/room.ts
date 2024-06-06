@@ -5,6 +5,10 @@ const RoomsRouter = Router();
 RoomsRouter.get("/", (req, res) => {
     /*  #swagger.tags = ["Timetable"]
         #swagger.operationId = "getAllClassrooms"
+        #swagger.summary = 'Get all classrooms related to the timetable'
+        #swagger.security = [{
+            "ApiKeyAuth": []
+        }]
         #swagger.parameters['name'] = {
             in: 'query',
             description: 'The name of the room to look for',
@@ -31,11 +35,14 @@ RoomsRouter.get("/", (req, res) => {
         }
     */
     const rooms = req.timetableQuery("classrooms", req.query);
-    if (!rooms) return res.sendStatus(404);
+    if (!rooms) { 
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableClassroomArray'
+                $ref: '#/components/schemas/TimetableClassroomArray'
             }
     } */
     res.status(200);
@@ -46,16 +53,23 @@ RoomsRouter.get("/:roomId", (req, res) => {
     /* 
         #swagger.tags = ["Timetable"]
         #swagger.operationId = "getClassroomById"
+        #swagger.summary = "Get a specific classroom by it's id related to the timetable"
+        #swagger.security = [{
+            "ApiKeyAuth": []
+        }]
     */
     const roomObj = req.timetableQueryOne("classrooms", {
         id: req.params.roomId
     });
 
-    if (!roomObj) return res.sendStatus(404);
+    if (!roomObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableClassroom'
+                $ref: '#/components/schemas/TimetableClassroom'
             }
     } */
     res.status(200);

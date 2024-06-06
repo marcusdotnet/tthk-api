@@ -5,6 +5,8 @@ const TeachersRouter = Router();
 TeachersRouter.get("/", (req, res) => {
     /*  #swagger.tags = ["Timetable"]
         #swagger.operationId = "getAllTeachers"
+        #swagger.summary = 'Get all teachers related to the timetable'
+        #swagger.security = [{"ApiKeyAuth": []}]
         #swagger.parameters['name'] = {
             in: 'query',
             description: 'The name of the teaacher to look for',
@@ -26,11 +28,14 @@ TeachersRouter.get("/", (req, res) => {
         }
     */
     const teachers = req.timetableQuery("teachers", req.query);
-    if (!teachers) return res.sendStatus(404);
+    if (!teachers) { 
+    // #swagger.responses[200] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableTeacherArray'
+                $ref: '#/components/schemas/TimetableTeacherArray'
             }
     } */
     res.status(200);
@@ -41,16 +46,21 @@ TeachersRouter.get("/:teacherId", (req, res) => {
     /* 
         #swagger.tags = ["Timetable"]
         #swagger.operationId = "getTeacherById"
+        #swagger.summary = 'Get a specific teacher by id from the timetable'
+        #swagger.security = [{"ApiKeyAuth": []}]
     */
     const teacherObj = req.timetableQueryOne("teachers", {
         id: req.params.teacherId
     });
 
-    if (!teacherObj) return res.sendStatus(404);
+    if (!teacherObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableTeacher'
+                $ref: '#/components/schemas/TimetableTeacher'
             }
     } */
     res.status(200);
@@ -61,13 +71,23 @@ TeachersRouter.get("/:teacherId/taught_classes", (req, res) => {
     /* 
         #swagger.tags = ["Timetable"]
         #swagger.operationId = "getTeacherTaughtClasses"
+        #swagger.summary = 'Get all classes taught by a specific teacher'
+        #swagger.security = [{"ApiKeyAuth": []}]
     */
     const teacherObj = req.timetableQueryOne("teachers", {
         id: req.params.teacherId
     });
 
-    if (!teacherObj) return res.sendStatus(404);
+    if (!teacherObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
+    /* #swagger.responses[200] = {
+            schema: {
+                $ref: '#/components/schemas/TimetableClassArray'
+            }
+    } */
     res.status(200);
     return res.send(teacherObj.taught_classes);
 });

@@ -6,6 +6,8 @@ const SubjectsRouter = Router();
 SubjectsRouter.get("/", (req, res) => {
     /*  #swagger.tags = ["Timetable"]
         #swagger.operationId = "getAllSubjects"
+        #swagger.security = [{"ApiKeyAuth": []}]
+        #swagger.summary = 'Get all subjects related to the timetable'
         #swagger.parameters['name'] = {
             in: 'query',
             description: 'The name of the subject to look for',
@@ -26,11 +28,14 @@ SubjectsRouter.get("/", (req, res) => {
         }
     */
     const subjects = req.timetableQuery("subjects", req.query);
-    if (!subjects) return res.sendStatus(404);
+    if (!subjects) {
+         // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableSubjectArray'
+                $ref: '#/components/schemas/TimetableSubjectArray'
             }
     } */
     res.status(200);
@@ -41,17 +46,22 @@ SubjectsRouter.get("/:subjectId", (req, res) => {
     /* 
         #swagger.tags = ["Timetable"]
         #swagger.operationId = "getSubjectById"
+        #swagger.security = [{"ApiKeyAuth": []}]
+        #swagger.summary = 'Get a specific subject by id related to the timetable'
     */
     const subjectObj: TimetableSubject | undefined = req.timetableQueryOne("subjects", {
         id: req.params.subjectId
     });
 
-    if (!subjectObj) return res.sendStatus(404);
+    if (!subjectObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableSubject'
+                $ref: '#/components/schemas/TimetableSubject'
             }
     } */
     res.status(200);

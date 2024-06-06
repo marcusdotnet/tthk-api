@@ -1,105 +1,57 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "TTHK Timetable API",
     "description": "This is the unofficial API to access TTHK's timetable data",
+    "license": {
+      "name": "MIT",
+      "url": "https://www.mit.edu/~amini/LICENSE.md"
+    },
+    "x-logo": {
+      "url": "/tthk_logo.png",
+      "backgroundColor": "#FFFFFF",
+      "altText": "TTHK logo"
+    },
     "version": "1.0.0"
   },
-  "host": "localhost:5637",
-  "basePath": "/",
+  "servers": [
+    {
+      "url": "http://localhost:5637/"
+    }
+  ],
   "tags": [
     {
       "name": "Timetable",
-      "description": "This is the main timetable API"
+      "description": "These are the main timetable endpoints"
     },
     {
       "name": "Timetable changes",
-      "description": "This is the timetable changes API, used to scrape changes from TTHK's website"
+      "description": "These are the timetable changes endpoints, used to scrape changes from TTHK's website"
     }
-  ],
-  "schemes": [
-    "http"
   ],
   "paths": {
     "/api/timetable_changes/": {
       "get": {
         "tags": [
-          "Timetable"
+          "Timetable changes"
         ],
+        "summary": "Get all timetable changes",
         "description": "",
         "operationId": "getAllTimetableChanges",
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableChangeEntry"
-            }
-          }
-        }
-      }
-    },
-    "/api/timetable/": {
-      "get": {
-        "tags": [
-          "Timetable"
-        ],
-        "description": "",
-        "operationId": "getAlltimetables",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/timetable/{timetableId}/classes/": {
-      "get": {
-        "tags": [
-          "Timetable"
-        ],
-        "description": "",
-        "operationId": "getAllClasses",
-        "parameters": [
-          {
-            "name": "timetableId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "The name of the class to look for",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "color",
-            "in": "query",
-            "description": "The color of the class to look for",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "teachers",
-            "in": "query",
-            "description": "An array of teacher ids that a class must have assigned to them, which is typically only one",
-            "required": false,
-            "type": "array"
-          },
-          {
-            "name": "classrooms",
-            "in": "query",
-            "description": "An array of classroom ids that a class must have assigned to them",
-            "required": false,
-            "type": "array"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableClassArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableChangeEntryArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableChangeEntryArray"
+                }
+              }
             }
           },
           "404": {
@@ -108,7 +60,158 @@
         },
         "security": [
           {
-            "bearerAuth": []
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/timetable/": {
+      "get": {
+        "tags": [
+          "Timetable"
+        ],
+        "summary": "Get all timetables",
+        "description": "",
+        "operationId": "getAlltimetables",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableArray"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/timetable/current": {
+      "get": {
+        "tags": [
+          "Timetable"
+        ],
+        "summary": "Get the current timetable",
+        "description": "",
+        "operationId": "getCurrentTimetable",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timetable"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timetable"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/api/timetable/{timetableId}/classes/": {
+      "get": {
+        "tags": [
+          "Timetable"
+        ],
+        "summary": "Get all classes/groups related to the timetable",
+        "description": "",
+        "operationId": "getAllClasses",
+        "parameters": [
+          {
+            "name": "timetableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The name of the class to look for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "color",
+            "in": "query",
+            "description": "The color of the class to look for",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teachers",
+            "in": "query",
+            "description": "An array of teacher ids that a class must have assigned to them, which is typically only one",
+            "required": false,
+            "schema": {
+              "type": "array"
+            }
+          },
+          {
+            "name": "classrooms",
+            "in": "query",
+            "description": "An array of classroom ids that a class must have assigned to them",
+            "required": false,
+            "schema": {
+              "type": "array"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassArray"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
           }
         ]
       }
@@ -118,6 +221,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get a specific class/group related to the timetable",
         "description": "",
         "operationId": "getClassById",
         "parameters": [
@@ -125,26 +229,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "classId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableClass"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClass"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClass"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/classes/{classId}/teachers": {
@@ -152,6 +274,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all teachers assigned to a specific class",
         "description": "",
         "operationId": "getClassTeachers",
         "parameters": [
@@ -159,26 +282,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "classId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableTeacherArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacherArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacherArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/classes/{classId}/classrooms": {
@@ -186,6 +327,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all classrooms assigned to a specific class",
         "description": "",
         "operationId": "getClassAssignedRooms",
         "parameters": [
@@ -193,26 +335,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "classId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableClassroomArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroomArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroomArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/teachers/": {
@@ -220,6 +380,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all teachers related to the timetable",
         "description": "",
         "operationId": "getAllTeachers",
         "parameters": [
@@ -227,28 +388,33 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "name",
             "in": "query",
             "description": "The name of the teaacher to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "color",
             "in": "query",
             "description": "The color of the teacher to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "taught_classes",
             "in": "query",
             "description": "An array of classes the teacher should be teaching",
             "required": false,
-            "type": "array",
             "schema": {
               "type": "string",
               "example": "string"
@@ -258,14 +424,28 @@
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableTeacherArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacherArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacherArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/teachers/{teacherId}": {
@@ -273,6 +453,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get a specific teacher by id from the timetable",
         "description": "",
         "operationId": "getTeacherById",
         "parameters": [
@@ -280,26 +461,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "teacherId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableTeacher"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacher"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacher"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/teachers/{teacherId}/taught_classes": {
@@ -307,6 +506,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all classes taught by a specific teacher",
         "description": "",
         "operationId": "getTeacherTaughtClasses",
         "parameters": [
@@ -314,23 +514,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "teacherId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassArray"
+                }
+              }
+            }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/subjects/": {
@@ -338,6 +559,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all subjects related to the timetable",
         "description": "",
         "operationId": "getAllSubjects",
         "parameters": [
@@ -345,41 +567,63 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "name",
             "in": "query",
             "description": "The name of the subject to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "short_name",
             "in": "query",
             "description": "The short name of the subject to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "color",
             "in": "query",
             "description": "The color of the subject to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableSubjectArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableSubjectArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableSubjectArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/subjects/{subjectId}": {
@@ -387,6 +631,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get a specific subject by id related to the timetable",
         "description": "",
         "operationId": "getSubjectById",
         "parameters": [
@@ -394,26 +639,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "subjectId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableSubject"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableSubject"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableSubject"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/lessons/": {
@@ -421,6 +684,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all lessons related to the timetable",
         "description": "",
         "operationId": "getAllLessons",
         "parameters": [
@@ -428,62 +692,99 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "subject",
             "in": "query",
             "description": "The id of the subject that the lesson should be associated with",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "classes",
+            "in": "query",
+            "description": "An array of class ids that the lesson must have assigned to them",
+            "required": false,
+            "schema": {
+              "type": "array"
+            }
           },
           {
             "name": "teachers",
             "in": "query",
             "description": "An array of teacher ids that the lesson must have assigned to them",
             "required": false,
-            "type": "array"
+            "schema": {
+              "type": "array"
+            }
           },
           {
             "name": "rooms",
             "in": "query",
             "description": "An array of classroom ids that the lesson must have assigned to them",
             "required": false,
-            "type": "array"
+            "schema": {
+              "type": "array"
+            }
           },
           {
             "name": "period_start",
             "in": "query",
             "description": "Which period the lesson has to start at",
             "required": false,
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "period_end",
             "in": "query",
             "description": "Which period the lesson has to end at",
             "required": false,
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "days",
             "in": "query",
             "description": "An array of the names of days that the lesson is on",
             "required": false,
-            "type": "array"
+            "schema": {
+              "type": "array"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableLessonArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableLessonArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableLessonArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/lessons/{lessonId}": {
@@ -491,6 +792,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get a specific lesson by it's id related to the timetable",
         "description": "",
         "operationId": "getLessonById",
         "parameters": [
@@ -498,26 +800,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "lessonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableLesson"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableLesson"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableLesson"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/lessons/{lessonId}/teachers": {
@@ -525,6 +845,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all teachers assigned to the lesson",
         "description": "",
         "operationId": "getLessonTeachers",
         "parameters": [
@@ -532,26 +853,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "lessonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableTeacherArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacherArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableTeacherArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/lessons/{lessonId}/subject": {
@@ -559,6 +898,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get the subject of a lesson",
         "description": "",
         "operationId": "getLessonSubject",
         "parameters": [
@@ -566,26 +906,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "lessonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableSubject"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableSubject"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableSubject"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/lessons/{lessonId}/rooms": {
@@ -593,6 +951,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all classrooms assigned to the lesson",
         "description": "",
         "operationId": "getLessonRooms",
         "parameters": [
@@ -600,26 +959,44 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "lessonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableClassroomArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroomArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroomArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/lessons/{lessonId}/period_span": {
@@ -627,6 +1004,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get the start and end periods of a lesson as a two element array",
         "description": "",
         "operationId": "getLessonPeriodSpan",
         "parameters": [
@@ -634,13 +1012,17 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "lessonId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -650,7 +1032,12 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/rooms/": {
@@ -658,6 +1045,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get all classrooms related to the timetable",
         "description": "",
         "operationId": "getAllClassrooms",
         "parameters": [
@@ -665,48 +1053,72 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "name",
             "in": "query",
             "description": "The name of the room to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "short_name",
             "in": "query",
             "description": "The short name of the room to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "buildingid",
             "in": "query",
             "description": "The building id of the room to look for",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "color",
             "in": "query",
             "description": "The color of the room to look for, not sure why anyone would use this",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableClassroomArray"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroomArray"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroomArray"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/api/timetable/{timetableId}/rooms/{roomId}": {
@@ -714,6 +1126,7 @@
         "tags": [
           "Timetable"
         ],
+        "summary": "Get a specific classroom by it's id related to the timetable",
         "description": "",
         "operationId": "getClassroomById",
         "parameters": [
@@ -721,68 +1134,50 @@
             "name": "timetableId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "roomId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TimetableClassroom"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroom"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimetableClassroom"
+                }
+              }
             }
           },
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     }
   },
-  "definitions": {
-    "TimetableClass": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "example": ""
-        },
-        "name": {
-          "type": "string",
-          "example": ""
-        },
-        "color": {
-          "type": "string",
-          "example": ""
-        },
-        "teachers": {
-          "type": "array",
-          "example": [
-            ""
-          ],
-          "items": {
-            "type": "string"
-          }
-        },
-        "classrooms": {
-          "type": "array",
-          "example": [
-            ""
-          ],
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "TimetableClassArray": {
-      "type": "array",
-      "items": {
+  "components": {
+    "schemas": {
+      "TimetableClass": {
         "type": "object",
         "properties": {
           "id": {
@@ -815,38 +1210,53 @@
               "type": "string"
             }
           }
+        },
+        "xml": {
+          "name": "TimetableClass"
         }
-      }
-    },
-    "TimetableTeacher": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "example": ""
-        },
-        "name": {
-          "type": "string",
-          "example": ""
-        },
-        "color": {
-          "type": "string",
-          "example": ""
-        },
-        "taught_classes": {
-          "type": "array",
-          "example": [
-            ""
-          ],
-          "items": {
-            "type": "string"
+      },
+      "TimetableClassArray": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": ""
+            },
+            "name": {
+              "type": "string",
+              "example": ""
+            },
+            "color": {
+              "type": "string",
+              "example": ""
+            },
+            "teachers": {
+              "type": "array",
+              "example": [
+                ""
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "classrooms": {
+              "type": "array",
+              "example": [
+                ""
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
           }
+        },
+        "xml": {
+          "name": "TimetableClassArray"
         }
-      }
-    },
-    "TimetableTeacherArray": {
-      "type": "array",
-      "items": {
+      },
+      "TimetableTeacher": {
         "type": "object",
         "properties": {
           "id": {
@@ -870,37 +1280,44 @@
               "type": "string"
             }
           }
+        },
+        "xml": {
+          "name": "TimetableTeacher"
         }
-      }
-    },
-    "TimetableClassroom": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "example": ""
+      },
+      "TimetableTeacherArray": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": ""
+            },
+            "name": {
+              "type": "string",
+              "example": ""
+            },
+            "color": {
+              "type": "string",
+              "example": ""
+            },
+            "taught_classes": {
+              "type": "array",
+              "example": [
+                ""
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         },
-        "name": {
-          "type": "string",
-          "example": ""
-        },
-        "short_name": {
-          "type": "string",
-          "example": ""
-        },
-        "buildingid": {
-          "type": "string",
-          "example": ""
-        },
-        "color": {
-          "type": "string",
-          "example": ""
+        "xml": {
+          "name": "TimetableTeacherArray"
         }
-      }
-    },
-    "TimetableClassroomArray": {
-      "type": "array",
-      "items": {
+      },
+      "TimetableClassroom": {
         "type": "object",
         "properties": {
           "id": {
@@ -923,74 +1340,66 @@
             "type": "string",
             "example": ""
           }
+        },
+        "xml": {
+          "name": "TimetableClassroom"
         }
-      }
-    },
-    "TimetableLesson": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "example": ""
-        },
-        "subject": {
-          "type": "string",
-          "example": ""
-        },
-        "teachers": {
-          "type": "array",
-          "example": [
-            ""
-          ],
-          "items": {
-            "type": "string"
+      },
+      "TimetableClassroomArray": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": ""
+            },
+            "name": {
+              "type": "string",
+              "example": ""
+            },
+            "short_name": {
+              "type": "string",
+              "example": ""
+            },
+            "buildingid": {
+              "type": "string",
+              "example": ""
+            },
+            "color": {
+              "type": "string",
+              "example": ""
+            }
           }
         },
-        "rooms": {
-          "type": "array",
-          "example": [
-            ""
-          ],
-          "items": {
-            "type": "string"
-          }
-        },
-        "period_start": {
-          "type": "number",
-          "example": 0
-        },
-        "period_end": {
-          "type": "number",
-          "example": 0
-        },
-        "days": {
-          "type": "array",
-          "example": [
-            ""
-          ],
-          "items": {
-            "type": "string"
-          }
+        "xml": {
+          "name": "TimetableClassroomArray"
         }
-      }
-    },
-    "TimetableLessonArray": {
-      "type": "array",
-      "items": {
+      },
+      "TimetableLesson": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "example": ""
+            "example": "*1"
           },
           "subject": {
             "type": "string",
-            "example": ""
+            "example": "*1223"
+          },
+          "classes": {
+            "type": "array",
+            "example": [
+              "-467"
+            ],
+            "items": {
+              "type": "string"
+            }
           },
           "teachers": {
             "type": "array",
             "example": [
-              ""
+              "*140"
             ],
             "items": {
               "type": "string"
@@ -999,19 +1408,21 @@
           "rooms": {
             "type": "array",
             "example": [
-              ""
+              "*29"
             ],
             "items": {
               "type": "string"
             }
           },
-          "period_start": {
-            "type": "number",
-            "example": 0
-          },
-          "period_end": {
-            "type": "number",
-            "example": 0
+          "periods": {
+            "type": "array",
+            "example": [
+              7,
+              7
+            ],
+            "items": {
+              "type": "number"
+            }
           },
           "days": {
             "type": "array",
@@ -1022,33 +1433,77 @@
               "type": "string"
             }
           }
+        },
+        "xml": {
+          "name": "TimetableLesson"
         }
-      }
-    },
-    "TimetableSubject": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "example": ""
+      },
+      "TimetableLessonArray": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "*1"
+            },
+            "subject": {
+              "type": "string",
+              "example": "*1223"
+            },
+            "classes": {
+              "type": "array",
+              "example": [
+                "-467"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "teachers": {
+              "type": "array",
+              "example": [
+                "*140"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "rooms": {
+              "type": "array",
+              "example": [
+                "*29"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "periods": {
+              "type": "array",
+              "example": [
+                7,
+                7
+              ],
+              "items": {
+                "type": "number"
+              }
+            },
+            "days": {
+              "type": "array",
+              "example": [
+                ""
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         },
-        "name": {
-          "type": "string",
-          "example": ""
-        },
-        "short_name": {
-          "type": "string",
-          "example": ""
-        },
-        "color": {
-          "type": "string",
-          "example": ""
+        "xml": {
+          "name": "TimetableLessonArray"
         }
-      }
-    },
-    "TimetableSubjectArray": {
-      "type": "array",
-      "items": {
+      },
+      "TimetableSubject": {
         "type": "object",
         "properties": {
           "id": {
@@ -1067,88 +1522,144 @@
             "type": "string",
             "example": ""
           }
+        },
+        "xml": {
+          "name": "TimetableSubject"
         }
-      }
-    },
-    "TimetableChangeEntry": {
-      "type": "object",
-      "properties": {
-        "dayLetter": {
-          "type": "string",
-          "example": ""
-        },
-        "date": {
+      },
+      "TimetableSubjectArray": {
+        "type": "array",
+        "items": {
           "type": "object",
-          "properties": {}
-        },
-        "class": {
-          "type": "string",
-          "example": ""
-        },
-        "period_span": {
-          "type": "array",
-          "example": [
-            0,
-            0
-          ],
-          "items": {
-            "type": "number"
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": ""
+            },
+            "name": {
+              "type": "string",
+              "example": ""
+            },
+            "short_name": {
+              "type": "string",
+              "example": ""
+            },
+            "color": {
+              "type": "string",
+              "example": ""
+            }
           }
         },
-        "teacher": {
-          "type": "string",
-          "example": ""
-        },
-        "info": {
-          "type": "string",
-          "example": ""
+        "xml": {
+          "name": "TimetableSubjectArray"
         }
-      }
-    },
-    "TimetableChangeEntryArray": {
-      "type": "array",
-      "items": {
+      },
+      "TimetableChangeEntryArray": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dayLetter": {
+              "type": "string",
+              "example": ""
+            },
+            "date": {
+              "type": "object",
+              "properties": {}
+            },
+            "class": {
+              "type": "string",
+              "example": ""
+            },
+            "period_span": {
+              "type": "array",
+              "example": [
+                0,
+                0
+              ],
+              "items": {
+                "type": "number"
+              }
+            },
+            "teacher": {
+              "type": "string",
+              "example": ""
+            },
+            "info": {
+              "type": "string",
+              "example": ""
+            }
+          }
+        },
+        "xml": {
+          "name": "TimetableChangeEntryArray"
+        }
+      },
+      "Timetable": {
         "type": "object",
         "properties": {
-          "dayLetter": {
+          "tt_num": {
             "type": "string",
             "example": ""
           },
-          "date": {
-            "type": "object",
-            "properties": {}
+          "year": {
+            "type": "number",
+            "example": 0
           },
-          "class": {
+          "text": {
             "type": "string",
             "example": ""
           },
-          "period_span": {
-            "type": "array",
-            "example": [
-              0,
-              0
-            ],
-            "items": {
-              "type": "number"
-            }
-          },
-          "teacher": {
+          "datefrom": {
             "type": "string",
-            "example": ""
+            "example": "yyyy-mm-dd"
           },
-          "info": {
-            "type": "string",
-            "example": ""
+          "hidden": {
+            "type": "boolean",
+            "example": false
           }
+        },
+        "xml": {
+          "name": "Timetable"
+        }
+      },
+      "TimetableArray": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "tt_num": {
+              "type": "string",
+              "example": ""
+            },
+            "year": {
+              "type": "number",
+              "example": 0
+            },
+            "text": {
+              "type": "string",
+              "example": ""
+            },
+            "datefrom": {
+              "type": "string",
+              "example": "yyyy-mm-dd"
+            },
+            "hidden": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "xml": {
+          "name": "TimetableArray"
         }
       }
-    }
-  },
-  "components": {
+    },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY"
       }
     }
   }

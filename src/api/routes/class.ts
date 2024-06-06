@@ -7,7 +7,8 @@ const ClassesRouter = Router();
 ClassesRouter.get("/", (req, res) => {
     /*  #swagger.tags = ["Timetable"]
         #swagger.operationId = 'getAllClasses'
-        #swagger.security = [{"bearerAuth": []}]
+        #swagger.security = [{"ApiKeyAuth": []}]
+        #swagger.summary = 'Get all classes/groups related to the timetable'
         #swagger.parameters['name'] = {
             in: 'query',
             description: 'The name of the class to look for',
@@ -34,11 +35,14 @@ ClassesRouter.get("/", (req, res) => {
         }
     */
     const classes = req.timetableQuery("classes", req.query);
-    if (!classes) return res.sendStatus(404);
+    if (classes.length == 0) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableClassArray'
+                $ref: '#/components/schemas/TimetableClassArray'
             }
     } */
     res.status(200);
@@ -49,16 +53,21 @@ ClassesRouter.get("/:classId", (req, res) => {
     /*
         #swagger.tags = ["Timetable"]
         #swagger.operationId = 'getClassById'
+        #swagger.summary = 'Get a specific class/group related to the timetable'
+        #swagger.security = [{"ApiKeyAuth": []}]
     */
     const classObj = req.timetableQueryOne("classes", {
         id: req.params.classId
     });
 
-    if (!classObj) return res.sendStatus(404);
+    if (!classObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableClass'
+                $ref: '#/components/schemas/TimetableClass'
             }
     } */
     res.status(200);
@@ -69,6 +78,8 @@ ClassesRouter.get("/:classId/teachers", (req, res) => {
     /*
         #swagger.tags = ["Timetable"]
         #swagger.operationId = 'getClassTeachers'
+        #swagger.summary = 'Get all teachers assigned to a specific class'
+        #swagger.security = [{"ApiKeyAuth": []}]
     */
     
     const classObj = req.timetableQueryOne("classes", {
@@ -76,36 +87,57 @@ ClassesRouter.get("/:classId/teachers", (req, res) => {
     });
 
     // #swagger.responses[404] = "Not found"
-    if (!classObj) return res.sendStatus(404);
+    if (!classObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
+    
+    const data = classObj.dto.teachers;
+    if (data.length == 0) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
+    
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableTeacherArray'
+                $ref: '#/components/schemas/TimetableTeacherArray'
             }
     } */
     res.status(200);
-    return res.json(classObj.dto.teachers);
+    return res.json(data);
 });
 
 ClassesRouter.get("/:classId/classrooms", (req, res) => {
     /*
         #swagger.tags = ["Timetable"]
         #swagger.operationId = 'getClassAssignedRooms'
+        #swagger.summary = 'Get all classrooms assigned to a specific class'
+        #swagger.security = [{"ApiKeyAuth": []}]
     */
     const classObj = req.timetableQueryOne("classes", {
         id: req.params.classId
     });
 
     // #swagger.responses[404] = "Not found"
-    if (!classObj) return res.sendStatus(404);
+    if (!classObj) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
+
+    const data = classObj.dto.classrooms;
+    if (data.length == 0) {
+        // #swagger.responses[404] = 'Not found'
+        return res.sendStatus(404);
+    }
 
     /* #swagger.responses[200] = {
             schema: {
-                $ref: '#/definitions/TimetableClassroomArray'
+                $ref: '#/components/schemas/TimetableClassroomArray'
             }
     } */
     res.status(200);
-    return res.json(classObj.dto.classrooms);
+    return res.json(data);
 });
 
 
