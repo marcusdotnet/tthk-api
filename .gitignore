@@ -2,4 +2,4 @@ timetable.json
 *.code-workspace
 .vscode/
 bun.lockb
-node-modules/
+node_modules/
