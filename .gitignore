@@ -1,5 +1,6 @@
 timetable.json
 *.code-workspace
 .vscode/
+bun.lockb
 bun.exe
 node_modules/

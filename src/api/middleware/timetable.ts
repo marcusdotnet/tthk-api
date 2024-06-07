@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { timetableService } from "../../../serviceProvider";
+import { timetableService } from "../../serviceProvider";
 import type { DataStoreType } from "../../types/timetable/internal/DataStore";
 import type { TimetableDataTableName } from "../../types/timetable/internal/DataTableName";
 

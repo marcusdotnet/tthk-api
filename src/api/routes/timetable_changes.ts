@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { timetableChangesService } from "../../../serviceProvider";
+import { timetableChangesService } from "../../serviceProvider";
 
 const TimetableChangesRouter = Router();
 

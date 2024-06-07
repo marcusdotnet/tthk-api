@@ -1,8 +1,9 @@
-import { timetableService } from "../../../serviceProvider"
+import { timetableService } from "../../serviceProvider"
 import type { TimetableClassroom, TimetableClassroomId } from "./Classroom"
 import type { TimetableDay } from "./Day"
 import type { TimetableLesson, TimetableLessonId } from "./Lesson"
 import { DataTableObject } from "./internal/DataTableObject";
+import { TimetableSubject } from "./Subject";
 
 export const TABLE_NAME = "cards";
 
@@ -58,8 +59,8 @@ export class TimetableCard extends DataTableObject {
         return [startTime, endTime || startTime];
     }
 
-    get subject() {
-        return timetableService.queryOne(this.ttid, "subjects", { id: this.lesson.subjectid });
+    get subject(): TimetableSubject | undefined {
+        return timetableService.queryOne(this.ttid, "subjects", { id: this?.lesson?.subjectid });
     }
     
     assignedDays: TimetableDay[] = [];
@@ -75,8 +76,6 @@ export class TimetableCard extends DataTableObject {
         }
 
         this.assignedDays = assigneddays;
-        
-
     }
 
     get dto() {

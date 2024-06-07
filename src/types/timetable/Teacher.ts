@@ -1,4 +1,4 @@
-import { timetableService } from "../../../serviceProvider"
+import { timetableService } from "../../serviceProvider"
 import type { TimetableClass, TimetableClassId } from "./Class"
 import { TimetableDataStore } from "./internal/DataStore";
 import { DataTableObject } from "./internal/DataTableObject";

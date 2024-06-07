@@ -6,8 +6,9 @@ import type { TimetableDataTableName } from "../types/timetable/internal/DataTab
 import type { TimetableServiceOptions } from "../types/timetable/internal/ServiceOptions";
 import dataTableObjectFactory from "../types/dataTableObjectFactory";
 
-const timetableDevFile: BunFile = Bun.file("./timetable.json");
 
+const DEV = process.env.DEV === "true";
+const timetableDevFile: BunFile | false = DEV && Bun.file(process.env!.DEV_TIMETABLE_FILE as string);
 
 /**
  * The structure for the timetable file used in development mode
@@ -44,24 +45,22 @@ export class TimetableService {
     }
 
 
-
     /**
      * Fetch the timetable data
      * must be called at least once during the program lifecycle in order to query the timetable.
      */
     async fetchData(): Promise<void> {
-        const useLocalFile: boolean = Boolean(process.env?.DEV);
-        const options = this.options as TimetableServiceOptions;
-        const localFileExists = useLocalFile && await timetableDevFile.exists();
+        const options: TimetableServiceOptions = this.options as TimetableServiceOptions;
+        const localFileExists: boolean = DEV && timetableDevFile && await timetableDevFile.exists();
 
         var timetableConfigData: ApiConfigDataJson | undefined;
-        var devFileData: DevFileData = useLocalFile && (localFileExists && await timetableDevFile.json()) || { "data": {}, "config": {} };
+        var devFileData: DevFileData = (localFileExists && await timetableDevFile.json()) || { "data": {}, "config": {} };
 
 
-        if (useLocalFile && localFileExists)
+        if (localFileExists)
             timetableConfigData = devFileData["config"];
 
-        
+
         this.timetableStores = {};
         if (!timetableConfigData || !timetableConfigData?.r) {
             timetableConfigData = await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/ttviewer.js?__func=getTTViewerData`, {
@@ -78,12 +77,12 @@ export class TimetableService {
             return;
         };
 
-        if (useLocalFile && localFileExists)
+        if (DEV)
             devFileData["config"] = timetableConfigData;
 
 
         for (const timetableEntry of timetableConfigData.r.regular.timetables) {
-            const timetableData: TimetableApiDataJson = (useLocalFile && localFileExists && devFileData["data"][timetableEntry.tt_num]) || await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/regulartt.js?__func=regularttGetData`, {
+            const timetableData: TimetableApiDataJson = (localFileExists && devFileData["data"][timetableEntry.tt_num]) || await ((await fetch(`${options.eduPageTimetableUrl}/timetable/server/regulartt.js?__func=regularttGetData`, {
                 method: "POST",
                 body: JSON.stringify({
                     "__args": [null, timetableEntry.tt_num],
@@ -91,7 +90,7 @@ export class TimetableService {
                 })
             })).json());
 
-            if (useLocalFile)
+            if (DEV)
                 devFileData["data"][timetableEntry.tt_num] = timetableData;
 
             const dataStore: TimetableDataStore = new TimetableDataStore(timetableEntry);
@@ -140,8 +139,10 @@ export class TimetableService {
             }
         }
 
-        if (useLocalFile)
+        if (DEV && !localFileExists) {
             timetableDevFile.writer().write(JSON.stringify(devFileData));
+            console.log(`Wrote timetable data to ${timetableDevFile.name}`)
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { timetableService } from "../../serviceProvider";
+import { timetableService } from "../serviceProvider";
 import TimetableMiddleware from "./middleware/timetable";
 import ClassesRouter from "./routes/class";
 import LessonsRouter from "./routes/lesson";

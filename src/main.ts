@@ -1,12 +1,14 @@
-import { timetableChangesService, timetableService } from "../serviceProvider";
+import { timetableChangesService, timetableService } from "./serviceProvider";
 import app from "./api/server";
-import DataTableObjectFactory from "./types/dataTableObjectFactory";
 
 timetableChangesService.configure();
 timetableService.configure();
 
 
 (async () => {
+    if (process.env.DEV === "true")
+        console.log("Running in dev mode");
+
     await timetableChangesService.fetchData();
     await timetableService.fetchData();
 

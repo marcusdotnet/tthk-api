@@ -1,4 +1,4 @@
-import { timetableService } from "../../../serviceProvider";
+import { timetableService } from "../../serviceProvider";
 import { DataTableObject } from "./internal/DataTableObject";
 
 export const TABLE_NAME = "daysdefs";

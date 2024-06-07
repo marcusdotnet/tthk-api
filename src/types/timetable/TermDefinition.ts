@@ -1,4 +1,4 @@
-import { timetableService } from "../../../serviceProvider";
+import { timetableService } from "../../serviceProvider";
 import { DataTableObject } from "./internal/DataTableObject";
 
 /** The ID string for a timetable term definition */
