@@ -6,12 +6,13 @@ timetableService.configure();
 
 
 (async () => {
-    if (process.env.DEV === "true")
-        console.log("Running in dev mode");
+    console.log(`Running in mode '${process.env.NODE_ENV}'`);
+    if (process.env.NODE_ENV === "Development") {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    }
 
     await timetableChangesService.fetchData();
     await timetableService.fetchData();
-
 
     const timetableRefreshDelay: number = process.env.TIMETABLE_REFRESH_DELAY as unknown as number;
     setInterval(() => {

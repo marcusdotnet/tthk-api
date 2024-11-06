@@ -7,8 +7,6 @@ import path from "path";
 
 const app: Express = express();
 
-
-
 app.use(express.static(path.join(__dirname, "/docs/public")));
 
 app.use(express.json());

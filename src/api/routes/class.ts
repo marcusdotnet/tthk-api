@@ -9,30 +9,6 @@ ClassesRouter.get("/", (req, res) => {
         #swagger.operationId = 'getAllClasses'
         #swagger.security = [{"ApiKeyAuth": []}]
         #swagger.summary = 'Get all classes/groups related to the timetable'
-        #swagger.parameters['name'] = {
-            in: 'query',
-            description: 'The name of the class to look for',
-            required: false,
-            type: 'string'
-        }        
-        #swagger.parameters['color'] = {
-            in: 'query',
-            description: 'The color of the class to look for',
-            required: false,
-            type: 'string'
-        }
-        #swagger.parameters['teachers'] = {
-            in: 'query',
-            description: 'An array of teacher ids that a class must have assigned to them, which is typically only one',
-            required: false,
-            type: 'array'
-        }
-        #swagger.parameters['classrooms'] = {
-            in: 'query',
-            description: 'An array of classroom ids that a class must have assigned to them',
-            required: false,
-            type: 'array'
-        }
     */
     const classes = req.timetableQuery("classes", req.query);
     if (classes.length == 0) {
