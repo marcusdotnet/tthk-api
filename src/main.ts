@@ -19,6 +19,8 @@ timetableService.configure();
         timetableService.fetchData();
     }, timetableRefreshDelay * 1000);
 
+    await timetableService.store?.connect();
+    await timetableService.store?.save();
 
     const port: number = Number(process.env.API_PORT as unknown as string);
     app.listen(port, () => console.log(`Listening on port ${port}`));

@@ -67,8 +67,9 @@ export class TimetableService {
                     "__gsh": "00000000"
                 })
             })).json());
+
         }
-        
+
         if (!timetableConfigData) {
             console.error("Failed to retrieve timetable config data");
             return;
@@ -94,7 +95,6 @@ export class TimetableService {
             if (!timetableData) return;
             (timetableData as TimetableData).tt_id = timetableEntry.tt_num;
             timetables.push(timetableData as TimetableData);
-
         }
         
         const dataStore: TimetableDataStore = new TimetableDataStore(timetableConfigData, timetables);
