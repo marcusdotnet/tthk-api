@@ -1,14 +1,19 @@
 import { Router } from "express";
-import type { TimetableSubject } from "../../types/timetable/Subject";
+import { timetableService } from "../../serviceProvider";
 
 const SubjectsRouter = Router();
 
-SubjectsRouter.get("/", (req, res) => {
-
+SubjectsRouter.get("/", async (req, res) => {
+    const subjects = await timetableService.$(req.tt_id)?.collection('subjects').find(req.query).toArray();
+    return res.json(subjects);
 });
 
-SubjectsRouter.get("/:subjectId", (req, res) => {
+SubjectsRouter.get("/:subjectId", async (req, res) => {
+    const subjects = await timetableService.$(req.tt_id)?.collection('subjects').find({
+        id: req.params.subjectId
+    }).toArray();
 
+    return res.json(subjects);
 });
 
 export default SubjectsRouter;

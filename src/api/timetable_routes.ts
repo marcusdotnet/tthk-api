@@ -6,16 +6,16 @@ import LessonsRouter from "./routes/lesson";
 import RoomsRouter from "./routes/room";
 import SubjectsRouter from "./routes/subject";
 import TeachersRouter from "./routes/teacher";
-import type { TimetableDataStore } from "../types/timetable/internal/DataStore";
 
 const TimetableRouter = Router();
 
 
 TimetableRouter.get("/", (_, res) => {
-    
+    return res.json(timetableService.timetables);
 });
 
 TimetableRouter.get("/current", (_, res) => {
+    return res.json(timetableService.default_ttid);
 });
 
 TimetableRouter.use("/:timetableId/classes", TimetableMiddleware, ClassesRouter);

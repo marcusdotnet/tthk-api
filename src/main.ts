@@ -11,6 +11,7 @@ timetableService.configure();
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
 
+    console.log("Fetching timetable data...");
     await timetableChangesService.fetchData();
     await timetableService.fetchData();
 
@@ -19,9 +20,14 @@ timetableService.configure();
         timetableService.fetchData();
     }, timetableRefreshDelay * 1000);
 
-    await timetableService.store?.connect();
-    await timetableService.store?.save();
+    console.log("Connecting to database...");
+    await timetableService.connect();
 
+    console.log("Saving timetable data...");
+    await timetableService.save(process.env.NODE_ENV === "Development");
+    console.log("Timetable data saved!");
+
+    console.log("Starting API...");
     const port: number = Number(process.env.API_PORT as unknown as string);
     app.listen(port, () => console.log(`Listening on port ${port}`));
 })();

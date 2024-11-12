@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-
 const ClassesRouter = Router();
 
 ClassesRouter.get("/", (req, res) => {
